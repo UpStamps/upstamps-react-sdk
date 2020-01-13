@@ -5,11 +5,20 @@ var UpStampsContext =
 /*#__PURE__*/
 createContext({});
 var UpStampsProvider = function UpStampsProvider(_a) {
-  var children = _a.children;
+  var children = _a.children,
+      clientId = _a.clientId,
+      stage = _a.stage,
+      projectId = _a.projectId;
+  var params = {
+    clientId: clientId,
+    stage: stage,
+    projectId: projectId
+  };
 
   var _b = useState({
     name: "Johhn",
-    flags: ["car", "chat", "profile", "drawer"]
+    flags: ["car", "chat", "profile", "drawer"],
+    params: params
   }),
       state = _b[0],
       dispatch = _b[1];

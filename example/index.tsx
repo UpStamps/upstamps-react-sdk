@@ -1,10 +1,12 @@
-import 'react-app-polyfill/ie11';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { UpStampsProvider, useFlag, Flag } from '../.';
+import "react-app-polyfill/ie11";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { UpStampsProvider, useFlag, Flag } from "../.";
 
 const Home = () => {
-  const { show } = useFlag('profile');
+  const { show, params } = useFlag("profile");
+
+  console.log("params = ", params);
 
   return (
     <div>
@@ -19,7 +21,7 @@ const Home = () => {
 
 const App = () => {
   return (
-    <UpStampsProvider>
+    <UpStampsProvider clientId="client123" stage="dev" projectId="prokect123">
       <div>
         <Home />
       </div>
@@ -27,4 +29,4 @@ const App = () => {
   );
 };
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById("root"));

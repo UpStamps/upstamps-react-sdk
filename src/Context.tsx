@@ -1,15 +1,22 @@
 import React, { useState, createContext, useEffect } from "react";
 
+export interface UpStampsConfigParams {
+  clientId: string;
+  stage: string;
+  projectId: string;
+}
+
 export interface UpStampsState {
   name: string;
   flags: Array<string>;
+  params: UpStampsConfigParams;
 }
 
 export interface UpStampsContextState {
   state: UpStampsState;
 }
 
-export interface UpStampsProviderProps {
+export interface UpStampsProviderProps extends UpStampsConfigParams {
   children: React.ReactNode;
 }
 
@@ -19,10 +26,20 @@ export const UpStampsContext = createContext<UpStampsContextState>(
 
 export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
   children,
+  clientId,
+  stage,
+  projectId,
 }) => {
+  const params = {
+    clientId,
+    stage,
+    projectId,
+  };
+
   const [state, dispatch] = useState({
     name: "Johhn",
     flags: ["car", "chat", "profile", "drawer"],
+    params,
   });
 
   const [contextValue, setContextValue] = useState({

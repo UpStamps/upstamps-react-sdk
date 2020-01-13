@@ -35651,11 +35651,20 @@ var UpStampsContext =
 exports.UpStampsContext = UpStampsContext;
 
 var UpStampsProvider = function UpStampsProvider(_a) {
-  var children = _a.children;
+  var children = _a.children,
+      clientId = _a.clientId,
+      stage = _a.stage,
+      projectId = _a.projectId;
+  var params = {
+    clientId: clientId,
+    stage: stage,
+    projectId: projectId
+  };
 
   var _b = (0, _react.useState)({
     name: "Johhn",
-    flags: ["car", "chat", "profile", "drawer"]
+    flags: ["car", "chat", "profile", "drawer"],
+    params: params
   }),
       state = _b[0],
       dispatch = _b[1];
@@ -35728,18 +35737,25 @@ var ReactDOM = __importStar(require("react-dom"));
 var _1 = require("../.");
 
 var Home = function Home() {
-  var show = _1.useFlag('profile').show;
+  var _a = _1.useFlag("profile"),
+      show = _a.show,
+      params = _a.params;
 
+  console.log("params = ", params);
   return React.createElement("div", null, "Hey home", show && React.createElement("div", null, "This is a great feature"), React.createElement(_1.Flag, {
     name: "chat"
   }, React.createElement("div", null, "This is another great feature eheh")));
 };
 
 var App = function App() {
-  return React.createElement(_1.UpStampsProvider, null, React.createElement("div", null, React.createElement(Home, null)));
+  return React.createElement(_1.UpStampsProvider, {
+    clientId: "client123",
+    stage: "dev",
+    projectId: "prokect123"
+  }, React.createElement("div", null, React.createElement(Home, null)));
 };
 
-ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+ReactDOM.render(React.createElement(App, null), document.getElementById("root"));
 },{"react-app-polyfill/ie11":"node_modules/react-app-polyfill/ie11.js","react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/profiling.js","../.":"../dist/upstamps-react-sdk.esm.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
