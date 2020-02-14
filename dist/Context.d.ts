@@ -1,11 +1,12 @@
 import React from "react";
 export interface UpStampsConfigParams {
     clientId: string;
-    stage: string;
-    projectId: string;
+    envKey: string;
+    projectKey: string;
 }
 export interface UpStampsState {
-    name: string;
+    loading: boolean;
+    error: boolean;
     flags: Array<string>;
     params: UpStampsConfigParams;
 }

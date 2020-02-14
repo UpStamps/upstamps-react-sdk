@@ -35629,89 +35629,163 @@ function __importDefault(mod) {
     default: mod
   };
 }
-},{}],"../dist/upstamps-react-sdk.esm.js":[function(require,module,exports) {
-"use strict";
+},{}],"../dist/upstamps-react.cjs.development.js":[function(require,module,exports) {
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
-exports.useFlag = exports.UpStampsProvider = exports.UpStampsContext = exports.Flag = void 0;
 
-var _tslib = require("tslib");
+function _interopDefault(ex) {
+  return ex && _typeof(ex) === 'object' && 'default' in ex ? ex['default'] : ex;
+}
 
-var _react = _interopRequireWildcard(require("react"));
+var tslib = require('tslib');
 
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+var React = require('react');
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+var React__default = _interopDefault(React);
 
 var UpStampsContext =
 /*#__PURE__*/
-(0, _react.createContext)({});
-exports.UpStampsContext = UpStampsContext;
+React.createContext({});
+var apiUrl = "https://services.upstamps.com/api";
 
 var UpStampsProvider = function UpStampsProvider(_a) {
   var children = _a.children,
       clientId = _a.clientId,
-      stage = _a.stage,
-      projectId = _a.projectId;
+      envKey = _a.envKey,
+      projectKey = _a.projectKey;
   var params = {
     clientId: clientId,
-    stage: stage,
-    projectId: projectId
+    envKey: envKey,
+    projectKey: projectKey
   };
 
-  var _b = (0, _react.useState)({
-    name: "Johhn",
-    flags: ["car", "chat", "profile", "drawer"],
+  var _b = React.useState({
+    loading: true,
+    error: false,
+    flags: [],
     params: params
   }),
       state = _b[0],
       dispatch = _b[1];
 
-  var _c = (0, _react.useState)({
+  var _c = React.useState({
     state: state,
     dispatch: dispatch
   }),
       contextValue = _c[0],
-      setContextValue = _c[1]; // Update context value and trigger re-render
+      setContextValue = _c[1];
+
+  React.useEffect(function () {
+    var onFetchFlags = function onFetchFlags() {
+      return tslib.__awaiter(void 0, void 0, void 0, function () {
+        var url, response, flags, data_1, e_1;
+        return tslib.__generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              _a.trys.push([0, 3,, 4]); //If the flags are collected, do not fetch again
+
+
+              if (state.flags.length > 0) return [2
+              /*return*/
+              ];
+              url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey;
+              return [4
+              /*yield*/
+              , fetch(url)];
+
+            case 1:
+              response = _a.sent();
+              return [4
+              /*yield*/
+              , response.json()];
+
+            case 2:
+              flags = _a.sent().flags;
+              data_1 = flags.map(function (item) {
+                return item.name;
+              }); //Updates the state with the flags
+
+              dispatch(function (prevState) {
+                return tslib.__assign(tslib.__assign({}, prevState), {
+                  flags: data_1,
+                  loading: false
+                });
+              });
+              return [3
+              /*break*/
+              , 4];
+
+            case 3:
+              e_1 = _a.sent();
+              dispatch(function (prevState) {
+                return tslib.__assign(tslib.__assign({}, prevState), {
+                  error: true,
+                  loading: false
+                });
+              });
+              return [3
+              /*break*/
+              , 4];
+
+            case 4:
+              return [2
+              /*return*/
+              ];
+          }
+        });
+      });
+    };
+
+    onFetchFlags();
+  }, [state.flags]); // Update context value and trigger re-render
   // This patterns avoids unnecessary deep renders
   // https://reactjs.org/docs/context.html#caveats
 
-
-  (0, _react.useEffect)(function () {
-    setContextValue((0, _tslib.__assign)((0, _tslib.__assign)({}, contextValue), {
+  React.useEffect(function () {
+    setContextValue(tslib.__assign(tslib.__assign({}, contextValue), {
       state: state
     }));
   }, [state]);
-  return _react.default.createElement(UpStampsContext.Provider, {
+  return React__default.createElement(UpStampsContext.Provider, {
     value: contextValue
   }, children);
 };
 
-exports.UpStampsProvider = UpStampsProvider;
-
 var useFlag = function useFlag(name) {
-  var state = (0, _react.useContext)(UpStampsContext).state;
+  var state = React.useContext(UpStampsContext).state;
   return {
     show: state.flags.indexOf(name) !== -1
   };
 };
 
-exports.useFlag = useFlag;
-
 var Flag = function Flag(_a) {
   var children = _a.children,
       name = _a.name;
-  var state = (0, _react.useContext)(UpStampsContext).state;
+  var state = React.useContext(UpStampsContext).state;
   var show = state.flags.indexOf(name) !== -1; //Hide the feature
 
   if (!show) return null;
-  return _react.default.createElement(_react.Fragment, null, children);
+  return React__default.createElement(React.Fragment, null, children);
 };
 
 exports.Flag = Flag;
-},{"tslib":"../node_modules/tslib/tslib.es6.js","react":"../node_modules/react/index.js"}],"index.tsx":[function(require,module,exports) {
+exports.UpStampsContext = UpStampsContext;
+exports.UpStampsProvider = UpStampsProvider;
+exports.useFlag = useFlag;
+},{"tslib":"../node_modules/tslib/tslib.es6.js","react":"../node_modules/react/index.js"}],"../dist/index.js":[function(require,module,exports) {
+'use strict';
+
+if ("development" === 'production') {
+  module.exports = require('./upstamps-react.cjs.production.min.js');
+} else {
+  module.exports = require('./upstamps-react.cjs.development.js');
+}
+},{"./upstamps-react.cjs.development.js":"../dist/upstamps-react.cjs.development.js"}],"index.tsx":[function(require,module,exports) {
 "use strict";
 
 var __importStar = this && this.__importStar || function (mod) {
@@ -35737,26 +35811,25 @@ var ReactDOM = __importStar(require("react-dom"));
 var _1 = require("../.");
 
 var Home = function Home() {
-  var _a = _1.useFlag("profile"),
-      show = _a.show,
-      params = _a.params;
+  var show = _1.useFlag("chat").show;
 
-  console.log("params = ", params);
-  return React.createElement("div", null, "Hey home", show && React.createElement("div", null, "This is a great feature"), React.createElement(_1.Flag, {
-    name: "chat"
+  var pri = _1.useFlag("private_msg_2");
+
+  return React.createElement("div", null, show && React.createElement("div", null, "This is a great feature"), pri.show && React.createElement("div", null, "This is a great feature 2"), React.createElement(_1.Flag, {
+    name: "private_msg_2"
   }, React.createElement("div", null, "This is another great feature eheh")));
 };
 
 var App = function App() {
   return React.createElement(_1.UpStampsProvider, {
-    clientId: "client123",
-    stage: "dev",
-    projectId: "prokect123"
+    clientId: "40ad6937-f4fb-48be-9403-8f9f71744ed4",
+    projectKey: "rural-abuse",
+    envKey: "guilty-professional"
   }, React.createElement("div", null, React.createElement(Home, null)));
 };
 
 ReactDOM.render(React.createElement(App, null), document.getElementById("root"));
-},{"react-app-polyfill/ie11":"node_modules/react-app-polyfill/ie11.js","react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/profiling.js","../.":"../dist/upstamps-react-sdk.esm.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react-app-polyfill/ie11":"node_modules/react-app-polyfill/ie11.js","react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/profiling.js","../.":"../dist/index.js"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -35784,7 +35857,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56302" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64422" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
