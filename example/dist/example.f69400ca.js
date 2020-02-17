@@ -35651,7 +35651,7 @@ var React__default = _interopDefault(React);
 var UpStampsContext =
 /*#__PURE__*/
 React.createContext({});
-var apiUrl = "https://services.upstamps.com/api";
+var apiUrl = "https://services.upstamps.com/api/flags";
 
 var UpStampsProvider = function UpStampsProvider(_a) {
   var children = _a.children,
@@ -35742,10 +35742,7 @@ var UpStampsProvider = function UpStampsProvider(_a) {
     };
 
     onFetchFlags();
-  }, [state.flags]); // Update context value and trigger re-render
-  // This patterns avoids unnecessary deep renders
-  // https://reactjs.org/docs/context.html#caveats
-
+  }, [state.flags, clientId, envKey, projectKey]);
   React.useEffect(function () {
     setContextValue(tslib.__assign(tslib.__assign({}, contextValue), {
       state: state
@@ -35758,8 +35755,11 @@ var UpStampsProvider = function UpStampsProvider(_a) {
 
 var useFlag = function useFlag(name) {
   var state = React.useContext(UpStampsContext).state;
+  var flags = React.useMemo(function () {
+    return state.flags;
+  }, [state.flags]);
   return {
-    show: state.flags.indexOf(name) !== -1
+    show: flags.indexOf(name) !== -1
   };
 };
 
@@ -35857,7 +35857,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64422" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60747" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

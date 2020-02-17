@@ -1,10 +1,10 @@
 import { __awaiter, __generator, __assign } from 'tslib';
-import React, { createContext, useState, useEffect, useContext, Fragment } from 'react';
+import React, { createContext, useState, useEffect, useContext, useMemo, Fragment } from 'react';
 
 var UpStampsContext =
 /*#__PURE__*/
 createContext({});
-var apiUrl = "https://services.upstamps.com/api";
+var apiUrl = "https://services.upstamps.com/api/flags";
 var UpStampsProvider = function UpStampsProvider(_a) {
   var children = _a.children,
       clientId = _a.clientId,
@@ -94,10 +94,7 @@ var UpStampsProvider = function UpStampsProvider(_a) {
     };
 
     onFetchFlags();
-  }, [state.flags]); // Update context value and trigger re-render
-  // This patterns avoids unnecessary deep renders
-  // https://reactjs.org/docs/context.html#caveats
-
+  }, [state.flags, clientId, envKey, projectKey]);
   useEffect(function () {
     setContextValue(__assign(__assign({}, contextValue), {
       state: state
@@ -110,8 +107,11 @@ var UpStampsProvider = function UpStampsProvider(_a) {
 
 var useFlag = function useFlag(name) {
   var state = useContext(UpStampsContext).state;
+  var flags = useMemo(function () {
+    return state.flags;
+  }, [state.flags]);
   return {
-    show: state.flags.indexOf(name) !== -1
+    show: flags.indexOf(name) !== -1
   };
 };
 

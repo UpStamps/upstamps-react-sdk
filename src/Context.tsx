@@ -25,7 +25,7 @@ export const UpStampsContext = createContext<UpStampsContextState>(
   {} as UpStampsContextState
 );
 
-const apiUrl: string = "https://services.upstamps.com/api";
+const apiUrl: string = "https://services.upstamps.com/api/flags";
 
 export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
   children,
@@ -76,12 +76,9 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
     onFetchFlags();
   }, [state.flags, clientId, envKey, projectKey]);
 
-  // Update context value and trigger re-render
-  // This patterns avoids unnecessary deep renders
-  // https://reactjs.org/docs/context.html#caveats
   useEffect(() => {
     setContextValue({ ...contextValue, state });
-  }, [state, contextValue]);
+  }, [state]);
 
   return (
     <UpStampsContext.Provider value={contextValue}>
