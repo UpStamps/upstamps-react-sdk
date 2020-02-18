@@ -1,5 +1,11 @@
 ## React Integration
 
+Quick links
+
+- [About](https://upstamps.com/)
+- [Dashboard](https://app.upstamps.com/)
+- [Documentation](https://docs.upstamps.com/)
+
 ### Installation
 
 First, let's install some packages!
@@ -18,7 +24,7 @@ yarn add upstamps-react
 
 With all the dependencies you installed, let's create your UpStamps Client.
 
-In our `index.js` file, let's import `UpStampsProvider` from `upstamps-react` and add the configuration params based on your UpStamps project. This params values can be found on the UpStamps Dashboard in your project's settings
+In our `index.js` file, let's import `UpStampsProvider` from `upstamps-react` and add the configuration params based on your UpStamps project. This params values can be found on the UpStamps [Dashboard](https://app.upstamps.com/) in your project's settings
 
 ```js
 import { UpStampsProvider } from "upstamps-react";
