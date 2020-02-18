@@ -20,10 +20,16 @@ export declare type ReducerSetFlags = {
     type: "set-flags";
     payload: {
         flags: Array<string>;
-        error?: boolean;
         loading: boolean;
     };
 };
-export declare type ReducerActions = ReducerSetFlags;
+export declare type ReducerSetFlagsError = {
+    type: "set-flags-error";
+    payload: {
+        error: boolean;
+        loading: boolean;
+    };
+};
+export declare type ReducerActions = ReducerSetFlags | ReducerSetFlagsError;
 export declare const UpStampsContext: React.Context<UpStampsContextState>;
 export declare const UpStampsProvider: React.FC<UpStampsProviderProps>;

@@ -1,6 +1,7 @@
 import "react-app-polyfill/ie11";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { UpStampsProvider, useFlag, Flag } from "../.";
 import { useCallback, useState } from "react";
 
@@ -28,6 +29,26 @@ const Home = () => {
   );
 };
 
+const About = () => {
+  const { show } = useFlag("private_msg_2");
+  return (
+    <div>
+      <h1>About page</h1>
+      <tr />
+      <ul>
+        {show && (
+          <li>
+            <a href="/">Abrir chat</a>
+          </li>
+        )}
+        <li>
+          <a href="/">Abrir dashboard</a>
+        </li>
+      </ul>
+    </div>
+  );
+};
+
 const App = () => {
   return (
     <UpStampsProvider
@@ -35,9 +56,30 @@ const App = () => {
       projectKey="rural-abuse"
       envKey="guilty-professional"
     >
-      <div>
-        <Home />
-      </div>
+      <Router>
+        <div>
+          <nav>
+            <ul>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/about">About</Link>
+              </li>
+            </ul>
+          </nav>
+
+          <Switch>
+            <Route path="/about">
+              <About />
+            </Route>
+
+            <Route path="/">
+              <Home />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
     </UpStampsProvider>
   );
 };

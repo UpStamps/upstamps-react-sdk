@@ -12,8 +12,11 @@ var reducer = function reducer(state, action) {
     case "set-flags":
       return __assign(__assign({}, state), action.payload);
 
+    case "set-flags-error":
+      return __assign(__assign({}, state), action.payload);
+
     default:
-      throw new Error("Unhandled action type: " + action.type);
+      throw new Error("Unhandled action type");
   }
 };
 
@@ -92,9 +95,8 @@ var UpStampsProvider = function UpStampsProvider(_a) {
             case 3:
               e_1 = _a.sent();
               dispatch({
-                type: "set-flags",
+                type: "set-flags-error",
                 payload: {
-                  flags: [],
                   loading: false,
                   error: true
                 }
@@ -137,7 +139,8 @@ var useFlag = function useFlag(name) {
   var flags = useMemo(function () {
     return state.flags;
   }, [state.flags]);
-  console.log("Render");
+  console.log("-------");
+  console.log("Render = ", flags);
   return {
     show: flags.indexOf(name) !== -1
   };

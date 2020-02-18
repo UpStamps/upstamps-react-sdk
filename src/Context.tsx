@@ -27,12 +27,19 @@ export type ReducerSetFlags = {
   type: "set-flags";
   payload: {
     flags: Array<string>;
-    error?: boolean;
     loading: boolean;
   };
 };
 
-export type ReducerActions = ReducerSetFlags;
+export type ReducerSetFlagsError = {
+  type: "set-flags-error";
+  payload: {
+    error: boolean;
+    loading: boolean;
+  };
+};
+
+export type ReducerActions = ReducerSetFlags | ReducerSetFlagsError;
 
 export const UpStampsContext = createContext<UpStampsContextState>(
   {} as UpStampsContextState
@@ -42,9 +49,11 @@ let reducer = (state: UpStampsState, action: ReducerActions) => {
   switch (action.type) {
     case "set-flags":
       return { ...state, ...action.payload };
+    case "set-flags-error":
+      return { ...state, ...action.payload };
 
     default:
-      throw new Error(`Unhandled action type: ${action.type}`);
+      throw new Error(`Unhandled action type`);
   }
 };
 
@@ -94,8 +103,8 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
         }
       } catch (e) {
         dispatch({
-          type: "set-flags",
-          payload: { flags: [], loading: false, error: true },
+          type: "set-flags-error",
+          payload: { loading: false, error: true },
         });
       }
     };
