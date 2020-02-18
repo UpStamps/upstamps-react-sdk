@@ -35648,10 +35648,20 @@ var React = require('react');
 
 var React__default = _interopDefault(React);
 
+var apiUrl = "https://services.upstamps.com/api";
 var UpStampsContext =
 /*#__PURE__*/
 React.createContext({});
-var apiUrl = "https://services.upstamps.com/api/flags";
+
+var reducer = function reducer(state, action) {
+  switch (action.type) {
+    case "set-flags":
+      return tslib.__assign(tslib.__assign({}, state), action.payload);
+
+    default:
+      throw new Error("Unhandled action type: " + action.type);
+  }
+};
 
 var UpStampsProvider = function UpStampsProvider(_a) {
   var children = _a.children,
@@ -35664,7 +35674,7 @@ var UpStampsProvider = function UpStampsProvider(_a) {
     projectKey: projectKey
   };
 
-  var _b = React.useState({
+  var _b = React.useReducer(reducer, {
     loading: true,
     error: false,
     flags: [],
@@ -35673,17 +35683,18 @@ var UpStampsProvider = function UpStampsProvider(_a) {
       state = _b[0],
       dispatch = _b[1];
 
-  var _c = React.useState({
-    state: state,
-    dispatch: dispatch
-  }),
-      contextValue = _c[0],
-      setContextValue = _c[1];
-
+  var value = React.useMemo(function () {
+    return {
+      state: state,
+      dispatch: dispatch
+    };
+  }, [state, dispatch]);
   React.useEffect(function () {
+    var ignore = false;
+
     var onFetchFlags = function onFetchFlags() {
       return tslib.__awaiter(void 0, void 0, void 0, function () {
-        var url, response, flags, data_1, e_1;
+        var url, response, flags, data, e_1;
         return tslib.__generator(this, function (_a) {
           switch (_a.label) {
             case 0:
@@ -35693,7 +35704,7 @@ var UpStampsProvider = function UpStampsProvider(_a) {
               if (state.flags.length > 0) return [2
               /*return*/
               ];
-              url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey;
+              url = apiUrl + "/flags/" + clientId + "/" + projectKey + "/" + envKey;
               return [4
               /*yield*/
               , fetch(url)];
@@ -35706,27 +35717,33 @@ var UpStampsProvider = function UpStampsProvider(_a) {
 
             case 2:
               flags = _a.sent().flags;
-              data_1 = flags.map(function (item) {
+              data = flags.map(function (item) {
                 return item.name;
               }); //Updates the state with the flags
 
-              dispatch(function (prevState) {
-                return tslib.__assign(tslib.__assign({}, prevState), {
-                  flags: data_1,
-                  loading: false
+              if (!ignore) {
+                dispatch({
+                  type: "set-flags",
+                  payload: {
+                    flags: data,
+                    loading: false
+                  }
                 });
-              });
+              }
+
               return [3
               /*break*/
               , 4];
 
             case 3:
               e_1 = _a.sent();
-              dispatch(function (prevState) {
-                return tslib.__assign(tslib.__assign({}, prevState), {
-                  error: true,
-                  loading: false
-                });
+              dispatch({
+                type: "set-flags",
+                payload: {
+                  flags: [],
+                  loading: false,
+                  error: true
+                }
               });
               return [3
               /*break*/
@@ -35742,22 +35759,31 @@ var UpStampsProvider = function UpStampsProvider(_a) {
     };
 
     onFetchFlags();
+    return function () {
+      ignore = true;
+    };
   }, [state.flags, clientId, envKey, projectKey]);
-  React.useEffect(function () {
-    setContextValue(tslib.__assign(tslib.__assign({}, contextValue), {
-      state: state
-    }));
-  }, [state]);
   return React__default.createElement(UpStampsContext.Provider, {
-    value: contextValue
+    value: value
   }, children);
 };
 
+var useUpStampsContext = function useUpStampsContext() {
+  var context = React.useContext(UpStampsContext);
+
+  if (context === undefined) {
+    throw new Error("UpStampsContext must be used with UpStampsProvider!");
+  }
+
+  return context;
+};
+
 var useFlag = function useFlag(name) {
-  var state = React.useContext(UpStampsContext).state;
+  var state = useUpStampsContext().state;
   var flags = React.useMemo(function () {
     return state.flags;
   }, [state.flags]);
+  console.log("Render");
   return {
     show: flags.indexOf(name) !== -1
   };
@@ -35766,8 +35792,10 @@ var useFlag = function useFlag(name) {
 var Flag = function Flag(_a) {
   var children = _a.children,
       name = _a.name;
-  var state = React.useContext(UpStampsContext).state;
-  var show = state.flags.indexOf(name) !== -1; //Hide the feature
+  var state = useUpStampsContext().state;
+  var show = React.useMemo(function () {
+    return state.flags.indexOf(name) !== -1;
+  }, [state.flags]); //Hide the feature
 
   if (!show) return null;
   return React__default.createElement(React.Fragment, null, children);
@@ -35810,14 +35838,25 @@ var ReactDOM = __importStar(require("react-dom"));
 
 var _1 = require("../.");
 
+var react_1 = require("react");
+
 var Home = function Home() {
+  var _a = react_1.useState(0),
+      count = _a[0],
+      setCount = _a[1];
+
   var show = _1.useFlag("chat").show;
 
   var pri = _1.useFlag("private_msg_2");
 
+  var onHandleClick = react_1.useCallback(function () {
+    setCount(count + 1);
+  }, [count]);
   return React.createElement("div", null, show && React.createElement("div", null, "This is a great feature"), pri.show && React.createElement("div", null, "This is a great feature 2"), React.createElement(_1.Flag, {
     name: "private_msg_2"
-  }, React.createElement("div", null, "This is another great feature eheh")));
+  }, React.createElement("div", null, "This OOOh")), React.createElement("h1", null, count), React.createElement("button", {
+    onClick: onHandleClick
+  }, "click count"));
 };
 
 var App = function App() {
@@ -35857,7 +35896,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60747" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53417" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -1,4 +1,6 @@
-import React, { useState, createContext, useEffect } from "react";
+import React, { createContext, useEffect, useReducer, useMemo } from "react";
+//Constants
+import { apiUrl } from "./constants";
 
 export interface UpStampsConfigParams {
   clientId: string;
@@ -21,11 +23,30 @@ export interface UpStampsProviderProps extends UpStampsConfigParams {
   children: React.ReactNode;
 }
 
+export type ReducerSetFlags = {
+  type: "set-flags";
+  payload: {
+    flags: Array<string>;
+    error?: boolean;
+    loading: boolean;
+  };
+};
+
+export type ReducerActions = ReducerSetFlags;
+
 export const UpStampsContext = createContext<UpStampsContextState>(
   {} as UpStampsContextState
 );
 
-const apiUrl: string = "https://services.upstamps.com/api/flags";
+let reducer = (state: UpStampsState, action: ReducerActions) => {
+  switch (action.type) {
+    case "set-flags":
+      return { ...state, ...action.payload };
+
+    default:
+      throw new Error(`Unhandled action type: ${action.type}`);
+  }
+};
 
 export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
   children,
@@ -39,49 +60,53 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
     projectKey,
   };
 
-  const [state, dispatch] = useState({
+  const [state, dispatch] = useReducer(reducer, {
     loading: true,
     error: false,
     flags: [],
     params,
   });
 
-  const [contextValue, setContextValue] = useState({
-    state,
-    dispatch,
-  });
+  const value = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   useEffect(() => {
+    let ignore = false;
     const onFetchFlags = async () => {
       try {
         //If the flags are collected, do not fetch again
         if (state.flags.length > 0) return;
         //Service Url
-        const url = `${apiUrl}/${clientId}/${projectKey}/${envKey}`;
+        const url = `${apiUrl}/flags/${clientId}/${projectKey}/${envKey}`;
+
         //Response with the all the flags
         const response = await fetch(url);
         const { flags } = await response.json();
+
         //Filters flags a creates a simple array
         const data = flags.map((item: { name: string }) => item.name);
+
         //Updates the state with the flags
-        dispatch(prevState => {
-          return { ...prevState, flags: data, loading: false };
-        });
+        if (!ignore) {
+          dispatch({
+            type: "set-flags",
+            payload: { flags: data, loading: false },
+          });
+        }
       } catch (e) {
-        dispatch(prevState => {
-          return { ...prevState, error: true, loading: false };
+        dispatch({
+          type: "set-flags",
+          payload: { flags: [], loading: false, error: true },
         });
       }
     };
     onFetchFlags();
+    return () => {
+      ignore = true;
+    };
   }, [state.flags, clientId, envKey, projectKey]);
 
-  useEffect(() => {
-    setContextValue({ ...contextValue, state });
-  }, [state]);
-
   return (
-    <UpStampsContext.Provider value={contextValue}>
+    <UpStampsContext.Provider value={value}>
       {children}
     </UpStampsContext.Provider>
   );

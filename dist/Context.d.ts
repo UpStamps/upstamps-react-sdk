@@ -16,5 +16,14 @@ export interface UpStampsContextState {
 export interface UpStampsProviderProps extends UpStampsConfigParams {
     children: React.ReactNode;
 }
+export declare type ReducerSetFlags = {
+    type: "set-flags";
+    payload: {
+        flags: Array<string>;
+        error?: boolean;
+        loading: boolean;
+    };
+};
+export declare type ReducerActions = ReducerSetFlags;
 export declare const UpStampsContext: React.Context<UpStampsContextState>;
 export declare const UpStampsProvider: React.FC<UpStampsProviderProps>;
