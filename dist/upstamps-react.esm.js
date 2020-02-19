@@ -139,8 +139,6 @@ var useFlag = function useFlag(name) {
   var flags = useMemo(function () {
     return state.flags;
   }, [state.flags]);
-  console.log("-------");
-  console.log("Render = ", flags);
   return {
     show: flags.indexOf(name) !== -1
   };
