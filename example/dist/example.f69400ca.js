@@ -39871,8 +39871,6 @@ var useFlag = function useFlag(name) {
   var flags = React.useMemo(function () {
     return state.flags;
   }, [state.flags]);
-  console.log("-------");
-  console.log("Render = ", flags);
   return {
     show: flags.indexOf(name) !== -1
   };
@@ -39929,10 +39927,8 @@ var react_router_dom_1 = require("react-router-dom");
 
 var _1 = require("../.");
 
-var react_1 = require("react");
-
 var Home = function Home() {
-  var _a = react_1.useState(0),
+  var _a = React.useState(0),
       count = _a[0],
       setCount = _a[1];
 
@@ -39940,7 +39936,7 @@ var Home = function Home() {
 
   var pri = _1.useFlag("private_msg_2");
 
-  var onHandleClick = react_1.useCallback(function () {
+  var onHandleClick = React.useCallback(function () {
     setCount(count + 1);
   }, [count]);
   return React.createElement("div", null, show && React.createElement("div", null, "This is a great feature"), pri.show && React.createElement("div", null, "This is a great feature 2"), React.createElement(_1.Flag, {
@@ -40005,7 +40001,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63338" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52274" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

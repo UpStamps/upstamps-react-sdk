@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -38,7 +38,9 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "tsdx": "^0.12.1",
-    "tslib": "^1.10.0",
     "typescript": "^3.7.4"
+  },
+  "dependencies": {
+    "tslib": "^1.10.0"
   }
 }

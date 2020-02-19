@@ -3,14 +3,13 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { UpStampsProvider, useFlag, Flag } from "../.";
-import { useCallback, useState } from "react";
 
 const Home = () => {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = React.useState(0);
   const { show } = useFlag("chat");
   const pri = useFlag("private_msg_2");
 
-  const onHandleClick = useCallback(() => {
+  const onHandleClick = React.useCallback(() => {
     setCount(count + 1);
   }, [count]);
 
