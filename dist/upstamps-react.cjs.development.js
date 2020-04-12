@@ -4,9 +4,45 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var tslib = require('tslib');
 var React = require('react');
 var React__default = _interopDefault(React);
+
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
+// A type of promise-like that resolves synchronously and supports only one observer
+
+const _iteratorSymbol = /*#__PURE__*/ typeof Symbol !== "undefined" ? (Symbol.iterator || (Symbol.iterator = Symbol("Symbol.iterator"))) : "@@iterator";
+
+const _asyncIteratorSymbol = /*#__PURE__*/ typeof Symbol !== "undefined" ? (Symbol.asyncIterator || (Symbol.asyncIterator = Symbol("Symbol.asyncIterator"))) : "@@asyncIterator";
+
+// Asynchronously call a function and send errors to recovery continuation
+function _catch(body, recover) {
+	try {
+		var result = body();
+	} catch(e) {
+		return recover(e);
+	}
+	if (result && result.then) {
+		return result.then(void 0, recover);
+	}
+	return result;
+}
 
 var apiUrl = "https://services.upstamps.com/api";
 
@@ -17,71 +53,66 @@ React.createContext({});
 var reducer = function reducer(state, action) {
   switch (action.type) {
     case "set-flags":
-      return tslib.__assign(tslib.__assign({}, state), action.payload);
+      return _extends({}, state, {}, action.payload);
 
     case "set-flags-error":
-      return tslib.__assign(tslib.__assign({}, state), action.payload);
+      return _extends({}, state, {}, action.payload);
+
+    case "set-remotes":
+      return _extends({}, state, {}, action.payload);
+
+    case "set-remotes-error":
+      return _extends({}, state, {}, action.payload);
 
     default:
       throw new Error("Unhandled action type");
   }
 };
 
-var UpStampsProvider = function UpStampsProvider(_a) {
-  var children = _a.children,
-      clientId = _a.clientId,
-      envKey = _a.envKey,
-      projectKey = _a.projectKey;
+var UpStampsProvider = function UpStampsProvider(_ref) {
+  var children = _ref.children,
+      clientId = _ref.clientId,
+      envKey = _ref.envKey,
+      projectKey = _ref.projectKey;
   var params = {
     clientId: clientId,
     envKey: envKey,
     projectKey: projectKey
   };
 
-  var _b = React.useReducer(reducer, {
+  var _useReducer = React.useReducer(reducer, {
     loading: true,
     error: false,
     flags: [],
+    remotes: [],
     params: params
   }),
-      state = _b[0],
-      dispatch = _b[1];
+      state = _useReducer[0],
+      dispatch = _useReducer[1];
 
   var value = React.useMemo(function () {
     return {
       state: state,
       dispatch: dispatch
     };
-  }, [state, dispatch]);
+  }, [state, dispatch]); //Get All Flags on Init
+
   React.useEffect(function () {
-    var ignore = false;
+    var ignore = false; //Get All the Flags
 
     var onFetchFlags = function onFetchFlags() {
-      return tslib.__awaiter(void 0, void 0, void 0, function () {
-        var url, response, flags, data, e_1;
-        return tslib.__generator(this, function (_a) {
-          switch (_a.label) {
-            case 0:
-              _a.trys.push([0, 3,, 4]); //If the flags are collected, do not fetch again
+      try {
+        return Promise.resolve(_catch(function () {
+          //If the flags are collected, do not fetch again
+          if (state.flags.length > 0) return; //Service Url
 
+          var url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey + "/flags"; //Response with the all the flags
 
-              if (state.flags.length > 0) return [2
-              /*return*/
-              ];
-              url = apiUrl + "/flags/" + clientId + "/" + projectKey + "/" + envKey;
-              return [4
-              /*yield*/
-              , fetch(url)];
-
-            case 1:
-              response = _a.sent();
-              return [4
-              /*yield*/
-              , response.json()];
-
-            case 2:
-              flags = _a.sent().flags;
-              data = flags.map(function (item) {
+          return Promise.resolve(fetch(url)).then(function (response) {
+            return Promise.resolve(response.json()).then(function (_ref2) {
+              var flags = _ref2.flags;
+              //Filters flags a creates a simple array
+              var data = flags.map(function (item) {
                 return item.name;
               }); //Updates the state with the flags
 
@@ -94,38 +125,66 @@ var UpStampsProvider = function UpStampsProvider(_a) {
                   }
                 });
               }
+            });
+          });
+        }, function () {
+          dispatch({
+            type: "set-flags-error",
+            payload: {
+              loading: false,
+              error: true
+            }
+          });
+        }));
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    }; //Get All the Remote Flags
 
-              return [3
-              /*break*/
-              , 4];
 
-            case 3:
-              e_1 = _a.sent();
-              dispatch({
-                type: "set-flags-error",
-                payload: {
-                  loading: false,
-                  error: true
-                }
-              });
-              return [3
-              /*break*/
-              , 4];
+    var onFetchRemotes = function onFetchRemotes() {
+      try {
+        return Promise.resolve(_catch(function () {
+          //If the Remotes Flags are collected, do not fetch again
+          if (state.remotes.length > 0) return; //Service Url
 
-            case 4:
-              return [2
-              /*return*/
-              ];
-          }
-        });
-      });
+          var url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey + "/remotes"; //Response with the all the remotes flags
+
+          return Promise.resolve(fetch(url)).then(function (response) {
+            return Promise.resolve(response.json()).then(function (_ref3) {
+              var remotes = _ref3.remotes;
+
+              if (!ignore) {
+                dispatch({
+                  type: "set-remotes",
+                  payload: {
+                    remotes: remotes,
+                    loading: false
+                  }
+                });
+              }
+            }); //Updates the state with the remotes flags
+          });
+        }, function () {
+          dispatch({
+            type: "set-remotes-error",
+            payload: {
+              loading: false,
+              error: true
+            }
+          });
+        }));
+      } catch (e) {
+        return Promise.reject(e);
+      }
     };
 
     onFetchFlags();
+    onFetchRemotes();
     return function () {
       ignore = true;
     };
-  }, [state.flags, clientId, envKey, projectKey]);
+  }, [state.flags, state.remotes, clientId, envKey, projectKey]);
   return React__default.createElement(UpStampsContext.Provider, {
     value: value
   }, children);
@@ -142,7 +201,9 @@ var useUpStampsContext = function useUpStampsContext() {
 };
 
 var useFlag = function useFlag(name) {
-  var state = useUpStampsContext().state;
+  var _useUpstampsContext = useUpStampsContext(),
+      state = _useUpstampsContext.state;
+
   var flags = React.useMemo(function () {
     return state.flags;
   }, [state.flags]);
@@ -151,20 +212,64 @@ var useFlag = function useFlag(name) {
   };
 };
 
-var Flag = function Flag(_a) {
-  var children = _a.children,
-      name = _a.name;
-  var state = useUpStampsContext().state;
+var Flag = function Flag(_ref) {
+  var children = _ref.children,
+      name = _ref.name;
+
+  var _useUpstampsContext = useUpStampsContext(),
+      state = _useUpstampsContext.state;
+
   var show = React.useMemo(function () {
     return state.flags.indexOf(name) !== -1;
-  }, [state.flags]); //Hide the feature
+  }, [state.flags, name]); //Hide the feature
 
   if (!show) return null;
   return React__default.createElement(React.Fragment, null, children);
 };
 
+var useRemoteFlag = function useRemoteFlag(name) {
+  var _useUpstampsContext = useUpStampsContext(),
+      state = _useUpstampsContext.state;
+
+  var remote = React.useMemo(function () {
+    return state.remotes.filter(function (item) {
+      return item.name === name;
+    });
+  }, [state.remotes, name]);
+  var verifyRemote = React.useMemo(function () {
+    return remote.length > 0;
+  }, [remote]);
+  return {
+    show: verifyRemote,
+    data: verifyRemote ? remote[0].data : {}
+  };
+};
+
+var RemoteFlag = function RemoteFlag(_ref) {
+  var children = _ref.children,
+      name = _ref.name;
+
+  var _useUpstampsContext = useUpStampsContext(),
+      state = _useUpstampsContext.state;
+
+  var remote = React.useMemo(function () {
+    return state.remotes.filter(function (item) {
+      return item.name === name;
+    });
+  }, [state.remotes, name]);
+  var verifyRemote = React.useMemo(function () {
+    return remote.length > 0;
+  }, [remote]);
+  var data = verifyRemote ? remote[0].data : {}; //Hide the feature
+
+  if (!verifyRemote) return null;
+  return React__default.createElement(React.Fragment, null, children(data));
+};
+
 exports.Flag = Flag;
+exports.RemoteFlag = RemoteFlag;
 exports.UpStampsContext = UpStampsContext;
 exports.UpStampsProvider = UpStampsProvider;
 exports.useFlag = useFlag;
+exports.useRemoteFlag = useRemoteFlag;
 //# sourceMappingURL=upstamps-react.cjs.development.js.map

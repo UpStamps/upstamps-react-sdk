@@ -18,29 +18,24 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "tsdx lint"
+      "pre-commit": "tsdx lint src"
     }
-  },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": false,
-    "trailingComma": "es5"
   },
   "name": "upstamps-react",
   "author": "Vitor Amaral",
   "module": "dist/upstamps-react-sdk.esm.js",
   "devDependencies": {
-    "@types/jest": "^24.0.25",
-    "@types/react": "^16.9.17",
-    "@types/react-dom": "^16.9.4",
-    "husky": "^4.0.7",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "tsdx": "^0.12.1",
-    "typescript": "^3.7.4"
+    "@types/jest": "^25.2.1",
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.6",
+    "husky": "^4.2.5",
+    "prettier": "^2.0.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "tsdx": "^0.13.1",
+    "typescript": "^3.8.3"
   },
   "dependencies": {
-    "tslib": "^1.10.0"
+    "tslib": "^1.11.1"
   }
 }

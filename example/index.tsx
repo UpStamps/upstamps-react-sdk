@@ -2,19 +2,25 @@ import "react-app-polyfill/ie11";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { UpStampsProvider, useFlag, Flag } from "../.";
+import {
+  UpStampsProvider,
+  useFlag,
+  Flag,
+  useRemoteFlag,
+  RemoteFlag,
+} from "../.";
 
 const Home = () => {
-  const [count, setCount] = React.useState(0);
+  //Flags
   const { show } = useFlag("chat");
   const pri = useFlag("private_msg_2");
-
-  const onHandleClick = React.useCallback(() => {
-    setCount(count + 1);
-  }, [count]);
+  //Remote flags
+  const remote = useRemoteFlag("new_one");
 
   return (
     <div>
+      <h3>Flags</h3>
+      <hr />
       {show && <div>This is a great feature</div>}
       {pri.show && <div>This is a great feature 2</div>}
 
@@ -22,8 +28,25 @@ const Home = () => {
         <div>This OOOh</div>
       </Flag>
 
-      <h1>{count}</h1>
-      <button onClick={onHandleClick}>click count</button>
+      <h3>Remote Flags</h3>
+      <hr />
+      {remote.show && (
+        <div style={{ color: remote.data.color }}>
+          This is a great remote feature
+        </div>
+      )}
+
+      <RemoteFlag name="new_one">
+        {data => (
+          <div style={{ color: data.color }}>
+            A Remote flag inside a component
+          </div>
+        )}
+      </RemoteFlag>
+
+      <h3>A/B Testing</h3>
+        <hr/>
+
     </div>
   );
 };
