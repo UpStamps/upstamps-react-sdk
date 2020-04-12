@@ -8,6 +8,7 @@ import {
   Flag,
   useRemoteFlag,
   RemoteFlag,
+  useABTest
 } from "../.";
 
 const Home = () => {
@@ -16,6 +17,10 @@ const Home = () => {
   const pri = useFlag("private_msg_2");
   //Remote flags
   const remote = useRemoteFlag("new_one");
+  //A/B Tests
+  const ABTest = useABTest("chat_color");
+
+  console.log("ABTest = ", ABTest);
 
   return (
     <div>
@@ -45,8 +50,22 @@ const Home = () => {
       </RemoteFlag>
 
       <h3>A/B Testing</h3>
-        <hr/>
-
+      <hr />
+      {ABTest.show && ABTest.variant === "A" ? (
+        <div>
+          This is a A TEST
+          <br />
+          <button onClick={() => ABTest.emitter()}>Send A Test</button>
+        </div>
+      ) : ABTest.variant === "B" ? (
+        <div>
+          This is a B TEST
+          <br />
+          <button onClick={() => ABTest.emitter()}>Send B Test</button>
+        </div>
+      ) : (
+        <div>This is a DEFAULT TEST</div>
+      )}
     </div>
   );
 };

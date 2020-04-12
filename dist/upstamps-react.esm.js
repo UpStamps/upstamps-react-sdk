@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useMemo, useEffect, useContext, Fragment } from 'react';
+import React, { createContext, useReducer, useMemo, useEffect, useContext, Fragment, useState } from 'react';
 
 function _extends() {
   _extends = Object.assign || function (target) {
@@ -259,5 +259,93 @@ var RemoteFlag = function RemoteFlag(_ref) {
   return React.createElement(Fragment, null, children(data));
 };
 
-export { Flag, RemoteFlag, UpStampsContext, UpStampsProvider, useFlag, useRemoteFlag };
+var useABTest = function useABTest(name) {
+  var context = useUpStampsContext();
+
+  var _useState = useState({
+    loading: true,
+    error: false,
+    show: false,
+    variant: "A"
+  }),
+      state = _useState[0],
+      setState = _useState[1];
+
+  var _context$state$params = context.state.params,
+      clientId = _context$state$params.clientId,
+      projectKey = _context$state$params.projectKey,
+      envKey = _context$state$params.envKey;
+  var url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey + "/testing";
+  var variantTypes = ["A", "B"];
+  useEffect(function () {
+    var onFetch = function onFetch() {
+      try {
+        var _temp2 = _catch(function () {
+          //Response with the all the A/B Tests
+          return Promise.resolve(fetch(url)).then(function (response) {
+            return Promise.resolve(response.json()).then(function (_ref) {
+              var ABTesting = _ref.ABTesting;
+              var result = ABTesting.filter(function (item) {
+                return item.name === name;
+              });
+              var show = result.length > 0;
+              var randomVariant = Math.floor(Math.random() * variantTypes.length);
+              setState(function (prevState) {
+                return _extends({}, prevState, {
+                  show: show,
+                  variant: variantTypes[randomVariant],
+                  loading: false
+                });
+              });
+            });
+          });
+        }, function () {
+          setState(function (prevState) {
+            return _extends({}, prevState, {
+              error: true,
+              loading: false
+            });
+          });
+        });
+
+        return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    onFetch();
+  }, [name, context.state.params]);
+
+  var onEmitter = function onEmitter() {
+    return Promise.resolve(_catch(function () {
+      var post_body = {
+        name: name,
+        varA: state.variant === "A" ? 1 : 0,
+        varB: state.variant === "B" ? 1 : 0
+      };
+      return Promise.resolve(fetch(url, {
+        method: "POST",
+        headers: {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        body: JSON.stringify(post_body)
+      })).then(function (response) {
+        return Promise.resolve(response.json());
+      });
+    }, function (e) {
+      return e;
+    }));
+  };
+
+  return {
+    show: state.show,
+    error: state.error,
+    loading: state.loading,
+    variant: state.variant,
+    emitter: onEmitter
+  };
+};
+
+export { Flag, RemoteFlag, UpStampsContext, UpStampsProvider, useABTest, useFlag, useRemoteFlag };
 //# sourceMappingURL=upstamps-react.esm.js.map
