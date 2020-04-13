@@ -9,7 +9,8 @@ import {
   useRemoteFlag,
   RemoteFlag,
   useABTest,
-  ABTest
+  ABTest,
+  useSegment
 } from "../.";
 
 const Home = () => {
@@ -20,6 +21,12 @@ const Home = () => {
   const remote = useRemoteFlag("new_one");
   //A/B Tests
   const ABTestHook = useABTest("chat_color");
+  //Segments
+  const segment = useSegment("goo", {
+    country: "Portugal",
+    client: "Microsoft Edge",
+    clientType: "mobile"
+  });
 
   return (
     <div>
@@ -82,6 +89,11 @@ const Home = () => {
           </div>
         </ABTest.Variant>
       </ABTest>
+
+      <h3>Segments</h3>
+      <hr />
+
+      {segment.show && <div>This is a feature from segment</div>}
     </div>
   );
 };

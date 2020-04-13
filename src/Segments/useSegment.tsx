@@ -1,38 +1,37 @@
-import { useEffect, useState } from "react";
-//Context
+import { useState, useEffect } from "react";
 import useUpstampsContext from "../Contexts/useUpstampsContext";
 //Utils
 import { apiUrl } from "../Utils/constants";
-import { fetchHandler, emitterHandler } from "./shared";
+import { handleFetch } from "./shared";
 
 interface IState {
   loading: boolean;
   error: boolean;
   show: boolean;
-  variant: string;
 }
 
-export const useABTest = (name: string) => {
+export const useSegment = (
+  name: string,
+  params: { country?: string; client?: string; clientType?: string }
+) => {
   const context = useUpstampsContext();
   const [state, setState] = useState<IState>({
     loading: true,
     error: false,
-    show: false,
-    variant: "A"
+    show: false
   });
   const { clientId, projectKey, envKey } = context.state.params;
-  const url = `${apiUrl}/${clientId}/${projectKey}/${envKey}/testing`;
+  const url = `${apiUrl}/${clientId}/${projectKey}/${envKey}/segment`;
 
   useEffect(() => {
     const onFetch = async () => {
       try {
-        const { show, loading, variant } = await fetchHandler(url, name);
+        const { show, loading } = await handleFetch(url, name, params);
 
         setState((prevState: IState) => {
           return {
             ...prevState,
             show,
-            variant,
             loading
           };
         });
@@ -45,19 +44,9 @@ export const useABTest = (name: string) => {
     onFetch();
   }, [name, context.state.params]);
 
-  const onEmitter = async () => {
-    try {
-      return await emitterHandler(state.variant, name, url);
-    } catch (e) {
-      return e;
-    }
-  };
-
   return {
     show: state.show,
     error: state.error,
-    loading: state.loading,
-    variant: state.variant,
-    emitter: onEmitter
+    loading: state.loading
   } as IState | { emitter: () => {} };
 };

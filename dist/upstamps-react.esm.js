@@ -323,8 +323,7 @@ var useABTest = function useABTest(name) {
       clientId = _context$state$params.clientId,
       projectKey = _context$state$params.projectKey,
       envKey = _context$state$params.envKey;
-  var url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey + "/testing"; // const variantTypes = ["A", "B"];
-
+  var url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey + "/testing";
   useEffect(function () {
     var onFetch = function onFetch() {
       try {
@@ -467,5 +466,99 @@ var Variant = function Variant(_ref3) {
 Variant.displayName = "ABTest.Variant";
 ABTest.Variant = Variant;
 
-export { ABTest, Flag, RemoteFlag, UpStampsContext, UpStampsProvider, useABTest, useFlag, useRemoteFlag };
+var queryBuilder = function queryBuilder(params) {
+  var esc = encodeURIComponent;
+  return Object.keys(params).filter(function (key) {
+    return params[key] !== undefined && params[key] && params[key] !== null;
+  }).map(function (key) {
+    return esc(key) + "=" + esc(params[key]);
+  }).join("&");
+};
+
+var handleFetch = function handleFetch(url, name, params) {
+  try {
+    return Promise.resolve(_catch(function () {
+      var query = queryBuilder({
+        name: name,
+        country: params.country,
+        client: params.client,
+        clientType: params.clientType
+      });
+      return Promise.resolve(fetch(url + "?" + query, {
+        method: "GET"
+      })).then(function (response) {
+        return Promise.resolve(response.json()).then(function (_ref) {
+          var segment = _ref.segment;
+          var show = segment.length > 0;
+          console.log("goo = ", segment);
+          return {
+            segment: segment,
+            show: show,
+            loading: false
+          };
+        });
+      });
+    }, function (e) {
+      throw e;
+    }));
+  } catch (e) {
+    return Promise.reject(e);
+  }
+};
+
+var useSegment = function useSegment(name, params) {
+  var context = useUpStampsContext();
+
+  var _useState = useState({
+    loading: true,
+    error: false,
+    show: false
+  }),
+      state = _useState[0],
+      setState = _useState[1];
+
+  var _context$state$params = context.state.params,
+      clientId = _context$state$params.clientId,
+      projectKey = _context$state$params.projectKey,
+      envKey = _context$state$params.envKey;
+  var url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey + "/segment";
+  useEffect(function () {
+    var onFetch = function onFetch() {
+      try {
+        var _temp2 = _catch(function () {
+          return Promise.resolve(handleFetch(url, name, params)).then(function (_ref) {
+            var show = _ref.show,
+                loading = _ref.loading;
+            setState(function (prevState) {
+              return _extends({}, prevState, {
+                show: show,
+                loading: loading
+              });
+            });
+          });
+        }, function () {
+          setState(function (prevState) {
+            return _extends({}, prevState, {
+              error: true,
+              loading: false
+            });
+          });
+        });
+
+        return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    onFetch();
+  }, [name, context.state.params]);
+  return {
+    show: state.show,
+    error: state.error,
+    loading: state.loading
+  };
+};
+
+export { ABTest, Flag, RemoteFlag, UpStampsContext, UpStampsProvider, useABTest, useFlag, useRemoteFlag, useSegment };
 //# sourceMappingURL=upstamps-react.esm.js.map

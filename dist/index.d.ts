@@ -13,7 +13,11 @@ export * from "./Flags/Flag";
 export * from "./Remotes/useRemoteFlag";
 export * from "./Remotes/RemoteFlag";
 /**
- * A/B Tests
+ * A/B TESTS
  */
 export * from "./ABTests/useABTest";
 export * from "./ABTests/ABTest";
+/**
+ * SEGMENTS
+ */
+export * from "./Segments/useSegment";
