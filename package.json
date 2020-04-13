@@ -36,6 +36,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "Utils": "^1.0.39",
     "tslib": "^1.11.1"
   }
 }

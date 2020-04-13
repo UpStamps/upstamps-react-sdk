@@ -1200,6 +1200,11 @@
     semver "^6.3.0"
     tsutils "^3.17.1"
 
+Utils@^1.0.39:
+  version "1.0.39"
+  resolved "https://registry.yarnpkg.com/Utils/-/Utils-1.0.39.tgz#6de71632cfbd91ed9a38bfa472e8afc33b340bd9"
+  integrity sha1-becWMs+9ke2aOL+kcuivwzs0C9k=
+
 abab@^2.0.0:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.3.tgz#623e2075e02eb2d3f2475e49f99c91846467907a"

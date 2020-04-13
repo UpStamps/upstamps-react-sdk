@@ -8,7 +8,8 @@ import {
   Flag,
   useRemoteFlag,
   RemoteFlag,
-  useABTest
+  useABTest,
+  ABTest
 } from "../.";
 
 const Home = () => {
@@ -18,9 +19,7 @@ const Home = () => {
   //Remote flags
   const remote = useRemoteFlag("new_one");
   //A/B Tests
-  const ABTest = useABTest("chat_color");
-
-  console.log("ABTest = ", ABTest);
+  const ABTestHook = useABTest("chat_color");
 
   return (
     <div>
@@ -51,21 +50,38 @@ const Home = () => {
 
       <h3>A/B Testing</h3>
       <hr />
-      {ABTest.show && ABTest.variant === "A" ? (
+      {ABTestHook.show && ABTestHook.variant === "A" ? (
         <div>
           This is a A TEST
           <br />
-          <button onClick={() => ABTest.emitter()}>Send A Test</button>
+          <button onClick={() => ABTestHook.emitter()}>Send A Test</button>
         </div>
       ) : ABTest.variant === "B" ? (
         <div>
           This is a B TEST
           <br />
-          <button onClick={() => ABTest.emitter()}>Send B Test</button>
+          <button onClick={() => ABTestHook.emitter()}>Send B Test</button>
         </div>
       ) : (
         <div>This is a DEFAULT TEST</div>
       )}
+
+      <br />
+
+      <ABTest name="chat_color">
+        <ABTest.Variant name="A">
+          <div>
+            this is a AB Comp - A Test
+            <button onClick={() => console.log("A")}>Send A Test</button>
+          </div>
+        </ABTest.Variant>
+        <ABTest.Variant name="B">
+          <div>
+            this is a AB Comp - B Test
+            <button onClick={() => console.log("B")}>Send B Test</button>
+          </div>
+        </ABTest.Variant>
+      </ABTest>
     </div>
   );
 };

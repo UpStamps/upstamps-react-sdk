@@ -36053,6 +36053,56 @@ var RemoteFlag = function RemoteFlag(_ref) {
   return React__default.createElement(React.Fragment, null, children(data));
 };
 
+var variantTypes = ["A", "B"];
+
+var fetchHandler = function fetchHandler(url, name) {
+  try {
+    return Promise.resolve(_catch(function () {
+      //Response with the all the A/B Tests
+      return Promise.resolve(fetch(url)).then(function (response) {
+        return Promise.resolve(response.json()).then(function (_ref) {
+          var ABTesting = _ref.ABTesting;
+          var result = ABTesting.filter(function (item) {
+            return item.name === name;
+          });
+          var show = result.length > 0;
+          var randomVariant = Math.floor(Math.random() * variantTypes.length);
+          return {
+            show: show,
+            variant: variantTypes[randomVariant],
+            loading: false
+          };
+        });
+      });
+    }, function (e) {
+      throw e;
+    }));
+  } catch (e) {
+    return Promise.reject(e);
+  }
+};
+
+var emitterHandler = function emitterHandler(variant, name, url) {
+  return Promise.resolve(_catch(function () {
+    var post_body = {
+      name: name,
+      varA: variant === "A" ? 1 : 0,
+      varB: variant === "B" ? 1 : 0
+    };
+    return Promise.resolve(fetch(url, {
+      method: "POST",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded"
+      },
+      body: JSON.stringify(post_body)
+    })).then(function (response) {
+      return Promise.resolve(response.json());
+    });
+  }, function (e) {
+    return e;
+  }));
+};
+
 var useABTest = function useABTest(name) {
   var context = useUpStampsContext();
 
@@ -36069,27 +36119,21 @@ var useABTest = function useABTest(name) {
       clientId = _context$state$params.clientId,
       projectKey = _context$state$params.projectKey,
       envKey = _context$state$params.envKey;
-  var url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey + "/testing";
-  var variantTypes = ["A", "B"];
+  var url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey + "/testing"; // const variantTypes = ["A", "B"];
+
   React.useEffect(function () {
     var onFetch = function onFetch() {
       try {
         var _temp2 = _catch(function () {
-          //Response with the all the A/B Tests
-          return Promise.resolve(fetch(url)).then(function (response) {
-            return Promise.resolve(response.json()).then(function (_ref) {
-              var ABTesting = _ref.ABTesting;
-              var result = ABTesting.filter(function (item) {
-                return item.name === name;
-              });
-              var show = result.length > 0;
-              var randomVariant = Math.floor(Math.random() * variantTypes.length);
-              setState(function (prevState) {
-                return _extends({}, prevState, {
-                  show: show,
-                  variant: variantTypes[randomVariant],
-                  loading: false
-                });
+          return Promise.resolve(fetchHandler(url, name)).then(function (_ref) {
+            var show = _ref.show,
+                loading = _ref.loading,
+                variant = _ref.variant;
+            setState(function (prevState) {
+              return _extends({}, prevState, {
+                show: show,
+                variant: variant,
+                loading: loading
               });
             });
           });
@@ -36113,20 +36157,7 @@ var useABTest = function useABTest(name) {
 
   var onEmitter = function onEmitter() {
     return Promise.resolve(_catch(function () {
-      var post_body = {
-        name: name,
-        varA: state.variant === "A" ? 1 : 0,
-        varB: state.variant === "B" ? 1 : 0
-      };
-      return Promise.resolve(fetch(url, {
-        method: "POST",
-        headers: {
-          "content-type": "application/x-www-form-urlencoded"
-        },
-        body: JSON.stringify(post_body)
-      })).then(function (response) {
-        return Promise.resolve(response.json());
-      });
+      return Promise.resolve(emitterHandler(state.variant, name, url));
     }, function (e) {
       return e;
     }));
@@ -36141,6 +36172,97 @@ var useABTest = function useABTest(name) {
   };
 };
 
+var ABTest = function ABTest(_ref) {
+  var children = _ref.children;
+  var context = useUpStampsContext();
+
+  var _useState = React.useState({
+    component: [],
+    loading: true,
+    error: false,
+    variant: "A"
+  }),
+      state = _useState[0],
+      setState = _useState[1];
+
+  var _context$state$params = context.state.params,
+      clientId = _context$state$params.clientId,
+      projectKey = _context$state$params.projectKey,
+      envKey = _context$state$params.envKey;
+  var url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey + "/testing";
+
+  var onRenderChildren = function onRenderChildren(variant) {
+    var component = React__default.Children.map(children, function (child) {
+      if (child.props.name === variant) {
+        return child;
+      }
+    });
+    setState(function (prevState) {
+      return _extends({}, prevState, {
+        component: component
+      });
+    });
+  };
+
+  React.useEffect(function () {
+    var onFetch = function onFetch() {
+      try {
+        var _temp2 = _catch(function () {
+          return Promise.resolve(fetchHandler(url, name)).then(function (_ref2) {
+            var show = _ref2.show,
+                loading = _ref2.loading,
+                variant = _ref2.variant;
+            onRenderChildren(variant);
+            setState(function (prevState) {
+              return _extends({}, prevState, {
+                show: show,
+                variant: variant,
+                loading: loading
+              });
+            });
+          });
+        }, function () {
+          setState(function (prevState) {
+            return _extends({}, prevState, {
+              error: true,
+              loading: false
+            });
+          });
+        });
+
+        return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    onFetch();
+  }, [name, context.state.params]);
+  /* const onEmitter = async () => {
+    try {
+      return await emitterHandler(state.variant, name, url);
+    } catch (e) {
+      return e;
+    }
+  };*/
+
+  /* return React.cloneElement(
+    <Fragment />,
+    { emitter: onEmitter, ...props },
+    <Fragment>{state.component}</Fragment>
+  );*/
+
+  return React__default.createElement(React.Fragment, null, state.component);
+};
+
+var Variant = function Variant(_ref3) {
+  var children = _ref3.children;
+  return React__default.createElement(React.Fragment, null, children);
+};
+
+Variant.displayName = "ABTest.Variant";
+ABTest.Variant = Variant;
+exports.ABTest = ABTest;
 exports.Flag = Flag;
 exports.RemoteFlag = RemoteFlag;
 exports.UpStampsContext = UpStampsContext;
@@ -36190,9 +36312,8 @@ var Home = function Home() {
 
   var remote = _1.useRemoteFlag("new_one");
 
-  var ABTest = _1.useABTest("chat_color");
+  var ABTestHook = _1.useABTest("chat_color");
 
-  console.log("ABTest = ", ABTest);
   return React.createElement("div", null, React.createElement("h3", null, "Flags"), React.createElement("hr", null), show && React.createElement("div", null, "This is a great feature"), pri.show && React.createElement("div", null, "This is a great feature 2"), React.createElement(_1.Flag, {
     name: "private_msg_2"
   }, React.createElement("div", null, "This OOOh")), React.createElement("h3", null, "Remote Flags"), React.createElement("hr", null), remote.show && React.createElement("div", {
@@ -36207,15 +36328,29 @@ var Home = function Home() {
         color: data.color
       }
     }, "A Remote flag inside a component");
-  }), React.createElement("h3", null, "A/B Testing"), React.createElement("hr", null), ABTest.show && ABTest.variant === "A" ? React.createElement("div", null, "This is a A TEST", React.createElement("br", null), React.createElement("button", {
+  }), React.createElement("h3", null, "A/B Testing"), React.createElement("hr", null), ABTestHook.show && ABTestHook.variant === "A" ? React.createElement("div", null, "This is a A TEST", React.createElement("br", null), React.createElement("button", {
     onClick: function onClick() {
-      return ABTest.emitter();
+      return ABTestHook.emitter();
     }
-  }, "Send A Test")) : ABTest.variant === "B" ? React.createElement("div", null, "This is a B TEST", React.createElement("br", null), React.createElement("button", {
+  }, "Send A Test")) : _1.ABTest.variant === "B" ? React.createElement("div", null, "This is a B TEST", React.createElement("br", null), React.createElement("button", {
     onClick: function onClick() {
-      return ABTest.emitter();
+      return ABTestHook.emitter();
     }
-  }, "Send B Test")) : React.createElement("div", null, "This is a DEFAULT TEST"));
+  }, "Send B Test")) : React.createElement("div", null, "This is a DEFAULT TEST"), React.createElement("br", null), React.createElement(_1.ABTest, {
+    name: "chat_color"
+  }, React.createElement(_1.ABTest.Variant, {
+    name: "A"
+  }, React.createElement("div", null, "this is a AB Comp - A Test", React.createElement("button", {
+    onClick: function onClick() {
+      return console.log("A");
+    }
+  }, "Send A Test"))), React.createElement(_1.ABTest.Variant, {
+    name: "B"
+  }, React.createElement("div", null, "this is a AB Comp - B Test", React.createElement("button", {
+    onClick: function onClick() {
+      return console.log("B");
+    }
+  }, "Send B Test")))));
 };
 
 var About = function About() {
@@ -36273,7 +36408,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52068" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59959" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

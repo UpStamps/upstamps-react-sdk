@@ -16,3 +16,4 @@ export * from "./Remotes/RemoteFlag";
  * A/B Tests
  */
 export * from "./ABTests/useABTest";
+export * from "./ABTests/ABTest";
