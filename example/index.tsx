@@ -4,13 +4,15 @@ import * as ReactDOM from "react-dom";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import {
   UpStampsProvider,
+  ScopesProvider,
   useFlag,
   Flag,
   useRemoteFlag,
   RemoteFlag,
   useABTest,
   ABTest,
-  useSegment
+  useSegment,
+  Segment
 } from "../.";
 
 const Home = () => {
@@ -63,7 +65,7 @@ const Home = () => {
           <br />
           <button onClick={() => ABTestHook.emitter()}>Send A Test</button>
         </div>
-      ) : ABTest.variant === "B" ? (
+      ) : ABTestHook.variant === "B" ? (
         <div>
           This is a B TEST
           <br />
@@ -94,6 +96,17 @@ const Home = () => {
       <hr />
 
       {segment.show && <div>This is a feature from segment</div>}
+
+      <Segment
+        name="goo"
+        params={{
+          country: "Portugal",
+          client: "Microsoft Edge",
+          clientType: "mobile"
+        }}
+      >
+        <div>This a segment inside a component</div>
+      </Segment>
     </div>
   );
 };
@@ -125,30 +138,32 @@ const App = () => {
       projectKey="rural-abuse"
       envKey="guilty-professional"
     >
-      <Router>
-        <div>
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/about">About</Link>
-              </li>
-            </ul>
-          </nav>
+      <ScopesProvider name="John Travolta" email="grandeamigo2@mail.com">
+        <Router>
+          <div>
+            <nav>
+              <ul>
+                <li>
+                  <Link to="/">Home</Link>
+                </li>
+                <li>
+                  <Link to="/about">About</Link>
+                </li>
+              </ul>
+            </nav>
 
-          <Switch>
-            <Route path="/about">
-              <About />
-            </Route>
+            <Switch>
+              <Route path="/about">
+                <About />
+              </Route>
 
-            <Route path="/">
-              <Home />
-            </Route>
-          </Switch>
-        </div>
-      </Router>
+              <Route path="/">
+                <Home />
+              </Route>
+            </Switch>
+          </div>
+        </Router>
+      </ScopesProvider>
     </UpStampsProvider>
   );
 };

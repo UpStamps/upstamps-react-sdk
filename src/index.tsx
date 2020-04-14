@@ -21,3 +21,8 @@ export * from "./ABTests/ABTest";
  * SEGMENTS
  */
 export * from "./Segments/useSegment";
+export * from "./Segments/Segment";
+/**
+ * SCOPES
+ */
+export * from "./Scopes/ScopeContext";

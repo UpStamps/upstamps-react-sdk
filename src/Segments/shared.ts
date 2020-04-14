@@ -21,8 +21,6 @@ export const handleFetch = async (
     const { segment } = await response.json();
     const show = segment.length > 0;
 
-    console.log("goo = ", segment)
-
     return {
       segment,
       show,

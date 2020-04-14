@@ -497,7 +497,6 @@ var handleFetch = function handleFetch(url, name, params) {
         return Promise.resolve(response.json()).then(function (_ref) {
           var segment = _ref.segment;
           var show = segment.length > 0;
-          console.log("goo = ", segment);
           return {
             segment: segment,
             show: show,
@@ -567,9 +566,175 @@ var useSegment = function useSegment(name, params) {
   };
 };
 
+var Segment = function Segment(_ref) {
+  var children = _ref.children,
+      name = _ref.name,
+      params = _ref.params;
+  var context = useUpStampsContext();
+
+  var _useState = React.useState({
+    loading: true,
+    error: false,
+    show: false
+  }),
+      state = _useState[0],
+      setState = _useState[1];
+
+  var _context$state$params = context.state.params,
+      clientId = _context$state$params.clientId,
+      projectKey = _context$state$params.projectKey,
+      envKey = _context$state$params.envKey;
+  var url = apiUrl + "/" + clientId + "/" + projectKey + "/" + envKey + "/segment";
+  React.useEffect(function () {
+    var onFetch = function onFetch() {
+      try {
+        var _temp2 = _catch(function () {
+          return Promise.resolve(handleFetch(url, name, params)).then(function (_ref2) {
+            var show = _ref2.show,
+                loading = _ref2.loading;
+            setState(function (prevState) {
+              return _extends({}, prevState, {
+                show: show,
+                loading: loading
+              });
+            });
+          });
+        }, function () {
+          setState(function (prevState) {
+            return _extends({}, prevState, {
+              error: true,
+              loading: false
+            });
+          });
+        });
+
+        return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    };
+
+    onFetch();
+  }, [name, context.state.params]); //Hide the feature
+
+  if (!state.show) return null;
+  return React__default.createElement(React.Fragment, null, children);
+};
+
+var ScopesContext =
+/*#__PURE__*/
+React.createContext({});
+
+var reducer$1 = function reducer(state, action) {
+  switch (action.type) {
+    case "set-scope":
+      return _extends({}, state, {}, action.payload);
+
+    case "set-scope-error":
+      return _extends({}, state, {}, action.payload);
+
+    default:
+      throw new Error("Unhandled action type");
+  }
+};
+
+var ScopesProvider = function ScopesProvider(_ref) {
+  var children = _ref.children,
+      name = _ref.name,
+      email = _ref.email;
+  var context = useUpStampsContext();
+  var params = {
+    name: name,
+    email: email
+  };
+
+  var _useReducer = React.useReducer(reducer$1, {
+    loading: true,
+    error: false,
+    params: params
+  }),
+      state = _useReducer[0],
+      dispatch = _useReducer[1];
+
+  var _context$state$params = context.state.params,
+      clientId = _context$state$params.clientId,
+      projectKey = _context$state$params.projectKey;
+  var value = React.useMemo(function () {
+    return {
+      state: state,
+      dispatch: dispatch
+    };
+  }, [state, dispatch]);
+  React.useEffect(function () {
+    var ignore = false;
+
+    var onSetScope = function onSetScope() {
+      try {
+        var _temp2 = _catch(function () {
+          //Service Url
+          var url = apiUrl + "/" + clientId + "/" + projectKey + "/scopes/add";
+          var post_body = {
+            name: name,
+            email: email
+          };
+          return Promise.resolve(fetch(url, {
+            method: "POST",
+            headers: {
+              "content-type": "application/x-www-form-urlencoded"
+            },
+            body: JSON.stringify(post_body)
+          })).then(function () {
+            window.localStorage.setItem("upstamps_scope_email", email);
+
+            if (!ignore) {
+              dispatch({
+                type: "set-scope",
+                payload: {
+                  success: true,
+                  loading: false
+                }
+              });
+            }
+          });
+        }, function () {
+          dispatch({
+            type: "set-scope-error",
+            payload: {
+              loading: false,
+              error: true
+            }
+          });
+        });
+
+        return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    }; //Get the email from localStorage
+
+
+    var storageEmail = window.localStorage.getItem("upstamps_scope_email");
+    var storageValidation = storageEmail === null; //Only set a scope if the email is null or different
+
+    if (!storageValidation && storageEmail !== email) {
+      onSetScope();
+    }
+
+    return function () {
+      ignore = true;
+    };
+  }, [email]);
+  return React__default.createElement(ScopesContext.Provider, {
+    value: value
+  }, children);
+};
+
 exports.ABTest = ABTest;
 exports.Flag = Flag;
 exports.RemoteFlag = RemoteFlag;
+exports.ScopesContext = ScopesContext;
+exports.ScopesProvider = ScopesProvider;
+exports.Segment = Segment;
 exports.UpStampsContext = UpStampsContext;
 exports.UpStampsProvider = UpStampsProvider;
 exports.useABTest = useABTest;
