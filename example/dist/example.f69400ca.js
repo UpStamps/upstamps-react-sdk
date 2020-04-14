@@ -36171,8 +36171,19 @@ var useABTest = function useABTest(name) {
   };
 };
 
+var Container = /*#__PURE__*/React__default.forwardRef(function (props, ref) {
+  React__default.useImperativeHandle(ref, function () {
+    return {
+      emitter: props.emitter
+    };
+  });
+  return React__default.createElement(React.Fragment, null, props.children);
+});
+
 var ABTest = function ABTest(_ref) {
-  var children = _ref.children;
+  var children = _ref.children,
+      name = _ref.name,
+      testRef = _ref.testRef;
   var context = useUpStampsContext();
 
   var _useState = React.useState({
@@ -36237,26 +36248,27 @@ var ABTest = function ABTest(_ref) {
 
     onFetch();
   }, [name, context.state.params]);
-  /* const onEmitter = async () => {
-    try {
-      return await emitterHandler(state.variant, name, url);
-    } catch (e) {
+
+  var onEmitter = function onEmitter() {
+    return Promise.resolve(_catch(function () {
+      return Promise.resolve(emitterHandler(state.variant, name, url));
+    }, function (e) {
       return e;
-    }
-  };*/
+    }));
+  };
 
-  /* return React.cloneElement(
-    <Fragment />,
-    { emitter: onEmitter, ...props },
-    <Fragment>{state.component}</Fragment>
-  );*/
-
-  return React__default.createElement(React.Fragment, null, state.component);
+  return React__default.createElement(Container, {
+    ref: testRef,
+    emitter: onEmitter
+  }, state.component);
 };
 
 var Variant = function Variant(_ref3) {
-  var children = _ref3.children;
-  return React__default.createElement(React.Fragment, null, children);
+  var children = _ref3.children,
+      name = _ref3.name;
+  return React__default.cloneElement(React__default.createElement(React.Fragment, null), {
+    name: name
+  }, React__default.createElement(React.Fragment, null, children));
 };
 
 Variant.displayName = "ABTest.Variant";
@@ -36572,6 +36584,8 @@ var Home = function Home() {
 
   var ABTestHook = _1.useABTest("chat_color");
 
+  var ABTestComponentRef = React.useRef();
+
   var segment = _1.useSegment("goo", {
     country: "Portugal",
     client: "Microsoft Edge",
@@ -36601,18 +36615,23 @@ var Home = function Home() {
       return ABTestHook.emitter();
     }
   }, "Send B Test")) : React.createElement("div", null, "This is a DEFAULT TEST"), React.createElement("br", null), React.createElement(_1.ABTest, {
+    testRef: ABTestComponentRef,
     name: "chat_color"
   }, React.createElement(_1.ABTest.Variant, {
     name: "A"
   }, React.createElement("div", null, "this is a AB Comp - A Test", React.createElement("button", {
     onClick: function onClick() {
-      return console.log("A");
+      var _a;
+
+      return (_a = ABTestComponentRef === null || ABTestComponentRef === void 0 ? void 0 : ABTestComponentRef.current) === null || _a === void 0 ? void 0 : _a.emitter();
     }
   }, "Send A Test"))), React.createElement(_1.ABTest.Variant, {
     name: "B"
   }, React.createElement("div", null, "this is a AB Comp - B Test", React.createElement("button", {
     onClick: function onClick() {
-      return console.log("B");
+      var _a;
+
+      return (_a = ABTestComponentRef === null || ABTestComponentRef === void 0 ? void 0 : ABTestComponentRef.current) === null || _a === void 0 ? void 0 : _a.emitter();
     }
   }, "Send B Test")))), React.createElement("h3", null, "Segments"), React.createElement("hr", null), segment.show && React.createElement("div", null, "This is a feature from segment"), React.createElement(_1.Segment, {
     name: "goo",

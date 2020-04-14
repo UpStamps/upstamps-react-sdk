@@ -1,13 +1,16 @@
 import React from "react";
 export interface ABTestProps {
     children: React.ReactNode;
+    testRef: React.RefObject<any>;
+    name: string;
 }
 export declare const ABTest: {
-    ({ children }: ABTestProps): JSX.Element;
+    ({ children, name, testRef }: ABTestProps): JSX.Element;
     Variant: {
-        ({ children }: {
+        ({ children, name }: {
             children: React.ReactNode;
-        }): JSX.Element;
+            name: string;
+        }): React.FunctionComponentElement<any>;
         displayName: string;
     };
 };

@@ -23,6 +23,8 @@ const Home = () => {
   const remote = useRemoteFlag("new_one");
   //A/B Tests
   const ABTestHook = useABTest("chat_color");
+  const ABTestComponentRef = React.useRef();
+
   //Segments
   const segment = useSegment("goo", {
     country: "Portugal",
@@ -77,17 +79,21 @@ const Home = () => {
 
       <br />
 
-      <ABTest name="chat_color">
+      <ABTest testRef={ABTestComponentRef} name="chat_color">
         <ABTest.Variant name="A">
           <div>
             this is a AB Comp - A Test
-            <button onClick={() => console.log("A")}>Send A Test</button>
+            <button onClick={() => ABTestComponentRef?.current?.emitter()}>
+              Send A Test
+            </button>
           </div>
         </ABTest.Variant>
         <ABTest.Variant name="B">
           <div>
             this is a AB Comp - B Test
-            <button onClick={() => console.log("B")}>Send B Test</button>
+            <button onClick={() => ABTestComponentRef?.current?.emitter()}>
+              Send B Test
+            </button>
           </div>
         </ABTest.Variant>
       </ABTest>

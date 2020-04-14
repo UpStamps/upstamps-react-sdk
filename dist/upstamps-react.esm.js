@@ -375,8 +375,20 @@ var useABTest = function useABTest(name) {
   };
 };
 
+var Container =
+/*#__PURE__*/
+React.forwardRef(function (props, ref) {
+  React.useImperativeHandle(ref, function () {
+    return {
+      emitter: props.emitter
+    };
+  });
+  return React.createElement(Fragment, null, props.children);
+});
 var ABTest = function ABTest(_ref) {
-  var children = _ref.children;
+  var children = _ref.children,
+      name = _ref.name,
+      testRef = _ref.testRef;
   var context = useUpStampsContext();
 
   var _useState = useState({
@@ -441,26 +453,27 @@ var ABTest = function ABTest(_ref) {
 
     onFetch();
   }, [name, context.state.params]);
-  /* const onEmitter = async () => {
-    try {
-      return await emitterHandler(state.variant, name, url);
-    } catch (e) {
+
+  var onEmitter = function onEmitter() {
+    return Promise.resolve(_catch(function () {
+      return Promise.resolve(emitterHandler(state.variant, name, url));
+    }, function (e) {
       return e;
-    }
-  };*/
+    }));
+  };
 
-  /* return React.cloneElement(
-    <Fragment />,
-    { emitter: onEmitter, ...props },
-    <Fragment>{state.component}</Fragment>
-  );*/
-
-  return React.createElement(Fragment, null, state.component);
+  return React.createElement(Container, {
+    ref: testRef,
+    emitter: onEmitter
+  }, state.component);
 };
 
 var Variant = function Variant(_ref3) {
-  var children = _ref3.children;
-  return React.createElement(Fragment, null, children);
+  var children = _ref3.children,
+      name = _ref3.name;
+  return React.cloneElement(React.createElement(Fragment, null), {
+    name: name
+  }, React.createElement(Fragment, null, children));
 };
 
 Variant.displayName = "ABTest.Variant";

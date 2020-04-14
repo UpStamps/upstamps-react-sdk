@@ -2,10 +2,12 @@ import React, { Fragment, useEffect, useState } from "react";
 import useUpstampsContext from "../Contexts/useUpstampsContext";
 //Utils
 import { apiUrl } from "../Utils/constants";
-import { fetchHandler } from "./shared";
+import { fetchHandler, emitterHandler } from "./shared";
 
 export interface ABTestProps {
   children: React.ReactNode;
+  testRef: React.RefObject<any>;
+  name: string;
 }
 
 interface IState {
@@ -15,7 +17,20 @@ interface IState {
   variant: string;
 }
 
-export const ABTest = ({ children }: ABTestProps) => {
+interface ContainerProps {
+  children: React.ReactNode;
+  emitter: () => {};
+}
+
+const Container = React.forwardRef(
+  (props: ContainerProps, ref: React.Ref<any>) => {
+    React.useImperativeHandle(ref, () => ({ emitter: props.emitter }));
+
+    return <Fragment>{props.children}</Fragment>;
+  }
+);
+
+export const ABTest = ({ children, name, testRef }: ABTestProps) => {
   const context = useUpstampsContext();
   const [state, setState] = useState<IState>({
     component: [],
@@ -66,25 +81,33 @@ export const ABTest = ({ children }: ABTestProps) => {
     onFetch();
   }, [name, context.state.params]);
 
-  /* const onEmitter = async () => {
+  const onEmitter = async () => {
     try {
       return await emitterHandler(state.variant, name, url);
     } catch (e) {
       return e;
     }
-  };*/
+  };
 
-  /* return React.cloneElement(
-    <Fragment />,
-    { emitter: onEmitter, ...props },
-    <Fragment>{state.component}</Fragment>
-  );*/
-
-  return <Fragment>{state.component}</Fragment>;
+  return (
+    <Container ref={testRef} emitter={onEmitter}>
+      {state.component}
+    </Container>
+  );
 };
 
-const Variant = ({ children }: { children: React.ReactNode }) => {
-  return <Fragment>{children}</Fragment>;
+const Variant = ({
+  children,
+  name
+}: {
+  children: React.ReactNode;
+  name: string;
+}) => {
+  return React.cloneElement(
+    <Fragment />,
+    { name },
+    <Fragment>{children}</Fragment>
+  );
 };
 
 Variant.displayName = "ABTest.Variant";
