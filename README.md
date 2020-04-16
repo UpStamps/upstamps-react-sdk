@@ -12,7 +12,6 @@ Quick links
 - [Documentation](https://docs.upstamps.com/)
 
 
-
 ## Installation
 
 First, let's install some packages!
@@ -63,13 +62,13 @@ import { UpStampsProvider, ScopesProvider } from "upstamps-react";
 </UpStampsProvider>;
 ```
 
-# Flags
+## Flags
 
 ---
 
 Feature flags are an excellent and new way to test features in production. Take advantage of different environments to hide or show your features. This can be used to facilitate the development process on project features that are not yet ready to be presented in production or even disable in real-time if any of the features in production are malfunctioning
 
-## useFlag Hook
+### useFlag Hook
 
 The library support React hooks. Use `useFlag` for a programmatical method. There's no limit to `useFlag`, just change the names. See the examples.
 
@@ -91,7 +90,7 @@ const AppComponent = () => {
 };
 ```
 
-## Flag Component
+### Flag Component
 
 The pre-built component `Flag` accepts a component child or children, this component inside the `<Flag>` wrapper only showed when the flag exists in your UpStamps Project.
 
@@ -108,13 +107,13 @@ import {  Flag } from "upstamps-react";
 
 ```
 
-# Remote Flags
+## Remote Flags
 
 ---
 
 Remote Flags have the same normal characteristics as a Flag but they can have a data payload. This data payload allows you to provide real-time properties to your project's features. If, for example, some of the features of a project need to change color, size or even other data in different environments, then the payload of data from a Remote Flag is the most suitable.
 
-## useRemoteFlag Hook
+### useRemoteFlag Hook
 
 ```js
 import {  useRemoteFlag } from "upstamps-react";
@@ -132,7 +131,7 @@ const AppComponent = () => {
 };
 ```
 
-## RemoteFlag Component
+### RemoteFlag Component
 
 ```js
 import { RemoteFlag } from "upstamps-react";
@@ -155,17 +154,17 @@ const AppComponent = () => {
 };
 ```
 
-# A/B Testing
+## A/B Testing
 
 ---
 
 It is sometimes difficult to understand whether a particular feature is having an impact on the project. To determine if a feature is being used properly, we can do A / B tests. This allows you to understand and compare the impact of functionality in different formats.
 
-When using UpStamps' A / B Tests it is possible to see if the user clicked on a certain feature. The features placed in the A / B Tests will be randomly shown to users. Use the Emitter to send the values to the UpStamps Dashboard.
+When using UpStamps' A / B Tests it is possible to see if the user clicked on a certain feature. The features placed in the A / B Tests will be randomly shown to users. Use the Emitter to send the values to the UpStamps [Dashboard](https://app.upstamps.com).
 
 The `emitter` is a function that understands which version of the test is shown on the user's screen. This function can be used in different events or contexts, for example: click, hover, etc.
 
-## useABTest Hook
+### useABTest Hook
 
 ```js
 import {  useABTest } from "upstamps-react";
@@ -195,7 +194,7 @@ const AppComponent = () => {
 };
 ```
 
-## ABTest Component
+### ABTest Component
 
 ```js
 import React from "react";
@@ -232,7 +231,7 @@ const componentRef = React.useRef();
 };
 ```
 
-# Segments
+## Segments
 
 ---
 
@@ -240,7 +239,7 @@ Users can be from different countries or even be using different platforms. Use 
 
 Notice: To use Segments it is necessary to integrate ScopesProvider. See the ScopesProvider instructions above to be able to register users.
 
-## useSegment Hook
+### useSegment Hook
 
 ```js
 import {  useSegment } from "upstamps-react";
@@ -262,7 +261,7 @@ const AppComponent = () => {
 };
 ```
 
-## Segment Component
+### Segment Component
 
 ```js
 import {  Segment } from "upstamps-react";
