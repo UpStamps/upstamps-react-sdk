@@ -89,12 +89,12 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
   children,
   clientId,
   envKey,
-  projectKey,
+  projectKey
 }) => {
   const params = {
     clientId,
     envKey,
-    projectKey,
+    projectKey
   };
 
   const [state, dispatch] = useReducer(reducer, {
@@ -102,7 +102,7 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
     error: false,
     flags: [],
     remotes: [],
-    params,
+    params
   });
 
   const value = useMemo(() => ({ state, dispatch }), [state, dispatch]);
@@ -129,13 +129,13 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
         if (!ignore) {
           dispatch({
             type: "set-flags",
-            payload: { flags: data, loading: false },
+            payload: { flags: data, loading: false }
           });
         }
       } catch (e) {
         dispatch({
           type: "set-flags-error",
-          payload: { loading: false, error: true },
+          payload: { loading: false, error: true }
         });
       }
     };
@@ -155,13 +155,13 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
         if (!ignore) {
           dispatch({
             type: "set-remotes",
-            payload: { remotes, loading: false },
+            payload: { remotes, loading: false }
           });
         }
       } catch (e) {
         dispatch({
           type: "set-remotes-error",
-          payload: { loading: false, error: true },
+          payload: { loading: false, error: true }
         });
       }
     };
@@ -170,7 +170,7 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
     return () => {
       ignore = true;
     };
-  }, [state.flags, state.remotes, clientId, envKey, projectKey]);
+  }, []);
 
   return (
     <UpStampsContext.Provider value={value}>

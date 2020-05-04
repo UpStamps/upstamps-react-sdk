@@ -5,7 +5,7 @@ export interface ABTestProps {
     name: string;
 }
 export declare const ABTest: {
-    ({ children, name, testRef }: ABTestProps): JSX.Element;
+    ({ children, name, testRef }: ABTestProps): JSX.Element | null;
     Variant: {
         ({ children, name }: {
             children: React.ReactNode;

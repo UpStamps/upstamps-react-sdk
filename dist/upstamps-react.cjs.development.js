@@ -184,7 +184,7 @@ var UpStampsProvider = function UpStampsProvider(_ref) {
     return function () {
       ignore = true;
     };
-  }, [state.flags, state.remotes, clientId, envKey, projectKey]);
+  }, []);
   return React__default.createElement(UpStampsContext.Provider, {
     value: value
   }, children);
@@ -402,7 +402,8 @@ var ABTest = function ABTest(_ref) {
     component: [],
     loading: true,
     error: false,
-    variant: "A"
+    variant: "A",
+    show: false
   }),
       state = _useState[0],
       setState = _useState[1];
@@ -469,6 +470,7 @@ var ABTest = function ABTest(_ref) {
     }));
   };
 
+  if (!state.loading && !state.show) return null;
   return React__default.createElement(Container, {
     ref: testRef,
     emitter: onEmitter
@@ -726,10 +728,9 @@ var ScopesProvider = function ScopesProvider(_ref) {
     }; //Get the email from localStorage
 
 
-    var storageEmail = window.localStorage.getItem("upstamps_scope_email");
-    var storageValidation = storageEmail === null; //Only set a scope if the email is null or different
+    var storageEmail = window.localStorage.getItem("upstamps_scope_email"); //Only set a scope if the email is null or different
 
-    if (!storageValidation && storageEmail !== email) {
+    if (storageEmail !== email) {
       onSetScope();
     }
 

@@ -15,6 +15,7 @@ interface IState {
   loading: boolean;
   error: boolean;
   variant: string;
+  show: boolean;
 }
 
 interface ContainerProps {
@@ -36,7 +37,8 @@ export const ABTest = ({ children, name, testRef }: ABTestProps) => {
     component: [],
     loading: true,
     error: false,
-    variant: "A"
+    variant: "A",
+    show: false
   });
 
   const { clientId, projectKey, envKey } = context.state.params;
@@ -88,6 +90,8 @@ export const ABTest = ({ children, name, testRef }: ABTestProps) => {
       return e;
     }
   };
+
+  if (!state.loading && !state.show) return null;
 
   return (
     <Container ref={testRef} emitter={onEmitter}>

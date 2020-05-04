@@ -35971,7 +35971,7 @@ var UpStampsProvider = function UpStampsProvider(_ref) {
     return function () {
       ignore = true;
     };
-  }, [state.flags, state.remotes, clientId, envKey, projectKey]);
+  }, []);
   return React__default.createElement(UpStampsContext.Provider, {
     value: value
   }, children);
@@ -36190,7 +36190,8 @@ var ABTest = function ABTest(_ref) {
     component: [],
     loading: true,
     error: false,
-    variant: "A"
+    variant: "A",
+    show: false
   }),
       state = _useState[0],
       setState = _useState[1];
@@ -36257,6 +36258,7 @@ var ABTest = function ABTest(_ref) {
     }));
   };
 
+  if (!state.loading && !state.show) return null;
   return React__default.createElement(Container, {
     ref: testRef,
     emitter: onEmitter
@@ -36512,10 +36514,9 @@ var ScopesProvider = function ScopesProvider(_ref) {
     }; //Get the email from localStorage
 
 
-    var storageEmail = window.localStorage.getItem("upstamps_scope_email");
-    var storageValidation = storageEmail === null; //Only set a scope if the email is null or different
+    var storageEmail = window.localStorage.getItem("upstamps_scope_email"); //Only set a scope if the email is null or different
 
-    if (!storageValidation && storageEmail !== email) {
+    if (storageEmail !== email) {
       onSetScope();
     }
 
@@ -36576,20 +36577,20 @@ var react_router_dom_1 = require("react-router-dom");
 var _1 = require("../.");
 
 var Home = function Home() {
-  var show = _1.useFlag("chat").show;
+  var show = _1.useFlag("instagram_icon").show;
 
-  var pri = _1.useFlag("private_msg_2");
+  var pri = _1.useFlag("instagram_icon");
 
-  var remote = _1.useRemoteFlag("new_one");
+  var remote = _1.useRemoteFlag("call_action");
 
-  var ABTestHook = _1.useABTest("chat_color");
+  var ABTestHook = _1.useABTest("contact_action");
 
   var ABTestComponentRef = React.useRef();
 
-  var segment = _1.useSegment("goo", {
+  var segment = _1.useSegment("sitemap_edge", {
     country: "Portugal",
     client: "Microsoft Edge",
-    clientType: "mobile"
+    clientType: "browser"
   });
 
   return React.createElement("div", null, React.createElement("h3", null, "Flags"), React.createElement("hr", null), show && React.createElement("div", null, "This is a great feature"), pri.show && React.createElement("div", null, "This is a great feature 2"), React.createElement(_1.Flag, {
@@ -36616,7 +36617,7 @@ var Home = function Home() {
     }
   }, "Send B Test")) : React.createElement("div", null, "This is a DEFAULT TEST"), React.createElement("br", null), React.createElement(_1.ABTest, {
     testRef: ABTestComponentRef,
-    name: "chat_color"
+    name: "contact_action"
   }, React.createElement(_1.ABTest.Variant, {
     name: "A"
   }, React.createElement("div", null, "this is a AB Comp - A Test", React.createElement("button", {
@@ -36634,13 +36635,48 @@ var Home = function Home() {
       return (_a = ABTestComponentRef === null || ABTestComponentRef === void 0 ? void 0 : ABTestComponentRef.current) === null || _a === void 0 ? void 0 : _a.emitter();
     }
   }, "Send B Test")))), React.createElement("h3", null, "Segments"), React.createElement("hr", null), segment.show && React.createElement("div", null, "This is a feature from segment"), React.createElement(_1.Segment, {
-    name: "goo",
+    name: "sitemap_edge",
     params: {
       country: "Portugal",
       client: "Microsoft Edge",
-      clientType: "mobile"
+      clientType: "browser"
     }
   }, React.createElement("div", null, "This a segment inside a component")));
+};
+
+var HomeTests = function HomeTests() {
+  var ABTestHook = _1.useABTest("contact_action");
+
+  var ABTestComponentRef = React.useRef();
+  console.log("ABTestHook = ", ABTestHook);
+  return React.createElement("div", null, React.createElement("h3", null, "A/B Testing"), ABTestHook.show && React.createElement("div", null, ABTestHook.variant === "A" ? React.createElement("div", null, "This is a A TEST", React.createElement("br", null), React.createElement("button", {
+    onClick: function onClick() {
+      return ABTestHook.emitter();
+    }
+  }, "Send A Test")) : ABTestHook.variant === "B" ? React.createElement("div", null, "This is a B TEST", React.createElement("br", null), React.createElement("button", {
+    onClick: function onClick() {
+      return ABTestHook.emitter();
+    }
+  }, "Send B Test")) : null), React.createElement("br", null), React.createElement(_1.ABTest, {
+    testRef: ABTestComponentRef,
+    name: "contact_action2"
+  }, React.createElement(_1.ABTest.Variant, {
+    name: "A"
+  }, React.createElement("div", null, "this is a AB Comp - A Test", React.createElement("button", {
+    onClick: function onClick() {
+      var _a;
+
+      return (_a = ABTestComponentRef === null || ABTestComponentRef === void 0 ? void 0 : ABTestComponentRef.current) === null || _a === void 0 ? void 0 : _a.emitter();
+    }
+  }, "Send A Test"))), React.createElement(_1.ABTest.Variant, {
+    name: "B"
+  }, React.createElement("div", null, "this is a AB Comp - B Test", React.createElement("button", {
+    onClick: function onClick() {
+      var _a;
+
+      return (_a = ABTestComponentRef === null || ABTestComponentRef === void 0 ? void 0 : ABTestComponentRef.current) === null || _a === void 0 ? void 0 : _a.emitter();
+    }
+  }, "Send B Test")))));
 };
 
 var About = function About() {
@@ -36655,9 +36691,9 @@ var About = function About() {
 
 var App = function App() {
   return React.createElement(_1.UpStampsProvider, {
-    clientId: "40ad6937-f4fb-48be-9403-8f9f71744ed4",
-    projectKey: "rural-abuse",
-    envKey: "guilty-professional"
+    clientId: "5d3843d9-fd51-4f95-a49d-81e3833935c7",
+    projectKey: "detailed-jade",
+    envKey: "mighty-copper"
   }, React.createElement(_1.ScopesProvider, {
     name: "John Travolta",
     email: "grandeamigo2@mail.com"
@@ -36701,7 +36737,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62948" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55562" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

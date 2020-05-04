@@ -112,12 +112,12 @@ export const ScopesProvider: React.FC<ScopesProviderProps> = ({
         });
       }
     };
+
     //Get the email from localStorage
     const storageEmail = window.localStorage.getItem("upstamps_scope_email");
-    const storageValidation = storageEmail === null;
 
     //Only set a scope if the email is null or different
-    if (!storageValidation && storageEmail !== email) {
+    if (storageEmail !== email) {
       onSetScope();
     }
     return () => {
