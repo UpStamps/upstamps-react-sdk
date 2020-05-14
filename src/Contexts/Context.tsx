@@ -1,6 +1,8 @@
 import React, { createContext, useEffect, useReducer, useMemo } from "react";
 //Constants
 import { apiUrl } from "../Utils/constants";
+//Utils
+import localForage from "localforage";
 
 export interface UpStampsConfigParams {
   clientId: string;
@@ -115,6 +117,7 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
       try {
         //If the flags are collected, do not fetch again
         if (state.flags.length > 0) return;
+
         //Service Url
         const url = `${apiUrl}/${clientId}/${projectKey}/${envKey}/flags`;
 
@@ -129,8 +132,13 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
         if (!ignore) {
           dispatch({
             type: "set-flags",
-            payload: { flags: data, loading: false }
+            payload: {
+              flags: data,
+              loading: false
+            }
           });
+          //Update or save on localStorage
+          await localForage.setItem("flags", data);
         }
       } catch (e) {
         dispatch({
@@ -144,6 +152,7 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
       try {
         //If the Remotes Flags are collected, do not fetch again
         if (state.remotes.length > 0) return;
+
         //Service Url
         const url = `${apiUrl}/${clientId}/${projectKey}/${envKey}/remotes`;
 
@@ -157,6 +166,8 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
             type: "set-remotes",
             payload: { remotes, loading: false }
           });
+          //Update or save on localStorage
+          await localForage.setItem("remotes", remotes);
         }
       } catch (e) {
         dispatch({

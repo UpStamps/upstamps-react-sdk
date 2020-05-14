@@ -1,11 +1,14 @@
 import React from "react";
-export interface SegmentProps {
+interface Params {
+    country?: string;
+    client?: string;
+    clientType?: string;
+}
+export interface SegmentProps extends Params {
     children: React.ReactNode;
     name: string;
-    params: {
-        country?: string;
-        client?: string;
-        clientType?: string;
-    };
+    params: Params;
+    localStorage?: boolean;
 }
 export declare const Segment: React.FC<SegmentProps>;
+export {};

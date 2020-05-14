@@ -6,6 +6,8 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var React = require('react');
 var React__default = _interopDefault(React);
+var localForage = _interopDefault(require('localforage'));
+var isEqual = _interopDefault(require('lodash.isequal'));
 
 function _extends() {
   _extends = Object.assign || function (target) {
@@ -116,15 +118,21 @@ var UpStampsProvider = function UpStampsProvider(_ref) {
                 return item.name;
               }); //Updates the state with the flags
 
-              if (!ignore) {
-                dispatch({
-                  type: "set-flags",
-                  payload: {
-                    flags: data,
-                    loading: false
-                  }
-                });
-              }
+              var _temp = function () {
+                if (!ignore) {
+                  dispatch({
+                    type: "set-flags",
+                    payload: {
+                      flags: data,
+                      loading: false
+                    }
+                  }); //Update or save on localStorage
+
+                  return Promise.resolve(localForage.setItem("flags", data)).then(function () {});
+                }
+              }();
+
+              if (_temp && _temp.then) return _temp.then(function () {});
             });
           });
         }, function () {
@@ -154,15 +162,21 @@ var UpStampsProvider = function UpStampsProvider(_ref) {
             return Promise.resolve(response.json()).then(function (_ref3) {
               var remotes = _ref3.remotes;
 
-              if (!ignore) {
-                dispatch({
-                  type: "set-remotes",
-                  payload: {
-                    remotes: remotes,
-                    loading: false
-                  }
-                });
-              }
+              var _temp2 = function () {
+                if (!ignore) {
+                  dispatch({
+                    type: "set-remotes",
+                    payload: {
+                      remotes: remotes,
+                      loading: false
+                    }
+                  }); //Update or save on localStorage
+
+                  return Promise.resolve(localForage.setItem("remotes", remotes)).then(function () {});
+                }
+              }();
+
+              if (_temp2 && _temp2.then) return _temp2.then(function () {});
             }); //Updates the state with the remotes flags
           });
         }, function () {
@@ -314,7 +328,11 @@ var emitterHandler = function emitterHandler(variant, name, url) {
   }));
 };
 
-var useABTest = function useABTest(name) {
+var useABTest = function useABTest(name, localStorage) {
+  if (localStorage === void 0) {
+    localStorage = false;
+  }
+
   var context = useUpStampsContext();
 
   var _useState = React.useState({
@@ -334,19 +352,39 @@ var useABTest = function useABTest(name) {
   React.useEffect(function () {
     var onFetch = function onFetch() {
       try {
-        var _temp2 = _catch(function () {
-          return Promise.resolve(fetchHandler(url, name)).then(function (_ref) {
-            var show = _ref.show,
-                loading = _ref.loading,
-                variant = _ref.variant;
-            setState(function (prevState) {
-              return _extends({}, prevState, {
-                show: show,
-                variant: variant,
-                loading: loading
-              });
-            });
-          });
+        var _temp3 = _catch(function () {
+          return Promise.resolve(localForage.getItem(name)).then(function (storageData) {
+            var _temp = function () {
+              if (localStorage && storageData !== null) {
+                console.log("useABTest local");
+                setState(function (prevState) {
+                  return _extends({}, prevState, {}, storageData);
+                });
+              } else {
+                console.log("useABTest remote");
+                return Promise.resolve(fetchHandler(url, name)).then(function (_ref) {
+                  var show = _ref.show,
+                      loading = _ref.loading,
+                      variant = _ref.variant;
+                  setState(function (prevState) {
+                    return _extends({}, prevState, {
+                      show: show,
+                      variant: variant,
+                      loading: loading
+                    });
+                  }); //Updates local storage with the new data
+
+                  return Promise.resolve(localForage.setItem(name, {
+                    show: show,
+                    variant: variant,
+                    loading: loading
+                  })).then(function () {});
+                });
+              }
+            }();
+
+            if (_temp && _temp.then) return _temp.then(function () {});
+          }); //Checks the current data on local storage
         }, function () {
           setState(function (prevState) {
             return _extends({}, prevState, {
@@ -356,7 +394,7 @@ var useABTest = function useABTest(name) {
           });
         });
 
-        return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
+        return Promise.resolve(_temp3 && _temp3.then ? _temp3.then(function () {}) : void 0);
       } catch (e) {
         return Promise.reject(e);
       }
@@ -395,7 +433,9 @@ React__default.forwardRef(function (props, ref) {
 var ABTest = function ABTest(_ref) {
   var children = _ref.children,
       name = _ref.name,
-      testRef = _ref.testRef;
+      testRef = _ref.testRef,
+      _ref$localStorage = _ref.localStorage,
+      localStorage = _ref$localStorage === void 0 ? false : _ref$localStorage;
   var context = useUpStampsContext();
 
   var _useState = React.useState({
@@ -430,20 +470,41 @@ var ABTest = function ABTest(_ref) {
   React.useEffect(function () {
     var onFetch = function onFetch() {
       try {
-        var _temp2 = _catch(function () {
-          return Promise.resolve(fetchHandler(url, name)).then(function (_ref2) {
-            var show = _ref2.show,
-                loading = _ref2.loading,
-                variant = _ref2.variant;
-            onRenderChildren(variant);
-            setState(function (prevState) {
-              return _extends({}, prevState, {
-                show: show,
-                variant: variant,
-                loading: loading
-              });
-            });
-          });
+        var _temp3 = _catch(function () {
+          return Promise.resolve(localForage.getItem(name)).then(function (storageData) {
+            var _temp = function () {
+              if (localStorage && storageData !== null) {
+                console.log("ABTest local");
+                onRenderChildren(storageData.variant);
+                setState(function (prevState) {
+                  return _extends({}, prevState, {}, storageData);
+                });
+              } else {
+                console.log("ABTest remote");
+                return Promise.resolve(fetchHandler(url, name)).then(function (_ref2) {
+                  var show = _ref2.show,
+                      loading = _ref2.loading,
+                      variant = _ref2.variant;
+                  onRenderChildren(variant);
+                  setState(function (prevState) {
+                    return _extends({}, prevState, {
+                      show: show,
+                      variant: variant,
+                      loading: loading
+                    });
+                  }); //Updates local storage with the new data
+
+                  return Promise.resolve(localForage.setItem(name, {
+                    show: show,
+                    variant: variant,
+                    loading: loading
+                  })).then(function () {});
+                });
+              }
+            }();
+
+            if (_temp && _temp.then) return _temp.then(function () {});
+          }); //Checks the current data on local storage
         }, function () {
           setState(function (prevState) {
             return _extends({}, prevState, {
@@ -453,7 +514,7 @@ var ABTest = function ABTest(_ref) {
           });
         });
 
-        return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
+        return Promise.resolve(_temp3 && _temp3.then ? _temp3.then(function () {}) : void 0);
       } catch (e) {
         return Promise.reject(e);
       }
@@ -527,7 +588,11 @@ var handleFetch = function handleFetch(url, name, params) {
   }
 };
 
-var useSegment = function useSegment(name, params) {
+var useSegment = function useSegment(name, params, localStorage) {
+  if (localStorage === void 0) {
+    localStorage = false;
+  }
+
   var context = useUpStampsContext();
 
   var _useState = React.useState({
@@ -546,17 +611,40 @@ var useSegment = function useSegment(name, params) {
   React.useEffect(function () {
     var onFetch = function onFetch() {
       try {
-        var _temp2 = _catch(function () {
-          return Promise.resolve(handleFetch(url, name, params)).then(function (_ref) {
-            var show = _ref.show,
-                loading = _ref.loading;
-            setState(function (prevState) {
-              return _extends({}, prevState, {
-                show: show,
-                loading: loading
-              });
-            });
-          });
+        var _temp3 = _catch(function () {
+          return Promise.resolve(localForage.getItem(name)).then(function (storageData) {
+            var _temp = function () {
+              if (localStorage && storageData !== null) {
+                console.log("useSegment local");
+                setState(function (prevState) {
+                  return _extends({}, prevState, {
+                    show: isEqual(params, storageData.params),
+                    loading: false
+                  });
+                });
+              } else {
+                return Promise.resolve(handleFetch(url, name, params)).then(function (_ref) {
+                  var show = _ref.show,
+                      loading = _ref.loading;
+                  console.log("useSegment remote");
+                  setState(function (prevState) {
+                    return _extends({}, prevState, {
+                      show: show,
+                      loading: loading
+                    });
+                  }); //Updates local storage with the new data
+
+                  return Promise.resolve(localForage.setItem(name, {
+                    show: show,
+                    loading: loading,
+                    params: params
+                  })).then(function () {});
+                });
+              }
+            }();
+
+            if (_temp && _temp.then) return _temp.then(function () {});
+          }); //Checks the current data on local storage
         }, function () {
           setState(function (prevState) {
             return _extends({}, prevState, {
@@ -566,7 +654,7 @@ var useSegment = function useSegment(name, params) {
           });
         });
 
-        return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
+        return Promise.resolve(_temp3 && _temp3.then ? _temp3.then(function () {}) : void 0);
       } catch (e) {
         return Promise.reject(e);
       }
@@ -584,7 +672,9 @@ var useSegment = function useSegment(name, params) {
 var Segment = function Segment(_ref) {
   var children = _ref.children,
       name = _ref.name,
-      params = _ref.params;
+      params = _ref.params,
+      _ref$localStorage = _ref.localStorage,
+      localStorage = _ref$localStorage === void 0 ? false : _ref$localStorage;
   var context = useUpStampsContext();
 
   var _useState = React.useState({
@@ -603,17 +693,40 @@ var Segment = function Segment(_ref) {
   React.useEffect(function () {
     var onFetch = function onFetch() {
       try {
-        var _temp2 = _catch(function () {
-          return Promise.resolve(handleFetch(url, name, params)).then(function (_ref2) {
-            var show = _ref2.show,
-                loading = _ref2.loading;
-            setState(function (prevState) {
-              return _extends({}, prevState, {
-                show: show,
-                loading: loading
-              });
-            });
-          });
+        var _temp3 = _catch(function () {
+          return Promise.resolve(localForage.getItem(name)).then(function (storageData) {
+            var _temp = function () {
+              if (localStorage && storageData !== null) {
+                console.log("Segment local = ");
+                setState(function (prevState) {
+                  return _extends({}, prevState, {
+                    show: isEqual(params, storageData.params),
+                    loading: false
+                  });
+                });
+              } else {
+                return Promise.resolve(handleFetch(url, name, params)).then(function (_ref2) {
+                  var show = _ref2.show,
+                      loading = _ref2.loading;
+                  console.log("Segment remote");
+                  setState(function (prevState) {
+                    return _extends({}, prevState, {
+                      show: show,
+                      loading: loading
+                    });
+                  }); //Updates local storage with the new data
+
+                  return Promise.resolve(localForage.setItem(name, {
+                    show: show,
+                    loading: loading,
+                    params: params
+                  })).then(function () {});
+                });
+              }
+            }();
+
+            if (_temp && _temp.then) return _temp.then(function () {});
+          }); //Checks the current data on local storage
         }, function () {
           setState(function (prevState) {
             return _extends({}, prevState, {
@@ -623,7 +736,7 @@ var Segment = function Segment(_ref) {
           });
         });
 
-        return Promise.resolve(_temp2 && _temp2.then ? _temp2.then(function () {}) : void 0);
+        return Promise.resolve(_temp3 && _temp3.then ? _temp3.then(function () {}) : void 0);
       } catch (e) {
         return Promise.reject(e);
       }

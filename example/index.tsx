@@ -22,15 +22,19 @@ const Home = () => {
   //Remote flags
   const remote = useRemoteFlag("call_action");
   //A/B Tests
-  const ABTestHook = useABTest("contact_action");
+  const ABTestHook = useABTest("contact_action", false);
   const ABTestComponentRef = React.useRef();
 
   //Segments
-  const segment = useSegment("sitemap_edge", {
-    country: "Portugal",
-    client: "Microsoft Edge",
-    clientType: "browser"
-  });
+  const segment = useSegment(
+    "sitemap_edge",
+    {
+      country: "Portugal",
+      client: "Microsoft Edge",
+      clientType: "browser"
+    },
+    false
+  );
 
   return (
     <div>
@@ -79,7 +83,11 @@ const Home = () => {
 
       <br />
 
-      <ABTest testRef={ABTestComponentRef} name="contact_action">
+      <ABTest
+        testRef={ABTestComponentRef}
+        name="contact_action"
+        localStorage={false}
+      >
         <ABTest.Variant name="A">
           <div>
             this is a AB Comp - A Test
@@ -110,6 +118,7 @@ const Home = () => {
           client: "Microsoft Edge",
           clientType: "browser"
         }}
+        localStorage={false}
       >
         <div>This a segment inside a component</div>
       </Segment>

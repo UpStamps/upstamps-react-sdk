@@ -3,11 +3,13 @@ import useUpstampsContext from "../Contexts/useUpstampsContext";
 //Utils
 import { apiUrl } from "../Utils/constants";
 import { fetchHandler, emitterHandler } from "./shared";
+import localForage from "localforage";
 
 export interface ABTestProps {
   children: React.ReactNode;
   testRef: React.RefObject<any>;
   name: string;
+  localStorage?: boolean;
 }
 
 interface IState {
@@ -31,7 +33,12 @@ const Container = React.forwardRef(
   }
 );
 
-export const ABTest = ({ children, name, testRef }: ABTestProps) => {
+export const ABTest = ({
+  children,
+  name,
+  testRef,
+  localStorage = false
+}: ABTestProps) => {
   const context = useUpstampsContext();
   const [state, setState] = useState<IState>({
     component: [],
@@ -62,18 +69,41 @@ export const ABTest = ({ children, name, testRef }: ABTestProps) => {
   useEffect(() => {
     const onFetch = async () => {
       try {
-        const { show, loading, variant } = await fetchHandler(url, name);
+        const storageData = (await localForage.getItem(name)) as IState;
 
-        onRenderChildren(variant);
+        //Checks the current data on local storage
+        if (localStorage && storageData !== null) {
+          console.log("ABTest local");
+          onRenderChildren(storageData.variant);
 
-        setState((prevState: IState) => {
-          return {
-            ...prevState,
+          setState((prevState: IState) => {
+            return {
+              ...prevState,
+              ...storageData
+            };
+          });
+        } else {
+          console.log("ABTest remote");
+          const { show, loading, variant } = await fetchHandler(url, name);
+
+          onRenderChildren(variant);
+
+          setState((prevState: IState) => {
+            return {
+              ...prevState,
+              show,
+              variant,
+              loading
+            };
+          });
+
+          //Updates local storage with the new data
+          await localForage.setItem(name, {
             show,
             variant,
             loading
-          };
-        });
+          });
+        }
       } catch (e) {
         setState((prevState: IState) => {
           return { ...prevState, error: true, loading: false };

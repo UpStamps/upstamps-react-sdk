@@ -13,5 +13,5 @@ export const useRemoteFlag = (name: string) => {
   return {
     show: verifyRemote,
     data: verifyRemote ? remote[0].data : {},
-  } as { show: boolean; data: {} };
+  } as const;
 };

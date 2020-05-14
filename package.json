@@ -25,18 +25,21 @@
   "author": "Vitor Amaral",
   "module": "dist/upstamps-react-sdk.esm.js",
   "devDependencies": {
-    "@types/jest": "^25.2.1",
-    "@types/react": "^16.9.34",
-    "@types/react-dom": "^16.9.7",
+    "@types/jest": "^25.2.2",
+    "@types/localforage": "^0.0.34",
+    "@types/react": "^16.9.35",
+    "@types/react-dom": "^16.9.8",
     "husky": "^4.2.5",
     "prettier": "^2.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "tsdx": "^0.13.2",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.2"
   },
   "dependencies": {
     "Utils": "^1.0.39",
-    "tslib": "^1.11.1"
+    "localforage": "^1.7.3",
+    "lodash.isequal": "^4.5.0",
+    "tslib": "^2.0.0"
   }
 }

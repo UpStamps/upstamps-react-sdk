@@ -1,13 +1,9 @@
-interface IState {
-    loading: boolean;
-    error: boolean;
-    show: boolean;
-}
 export declare const useSegment: (name: string, params: {
     country?: string | undefined;
     client?: string | undefined;
     clientType?: string | undefined;
-}) => IState | {
-    emitter: () => {};
+}, localStorage?: boolean) => {
+    readonly show: boolean;
+    readonly error: boolean;
+    readonly loading: boolean;
 };
-export {};

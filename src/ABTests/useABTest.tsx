@@ -4,6 +4,7 @@ import useUpstampsContext from "../Contexts/useUpstampsContext";
 //Utils
 import { apiUrl } from "../Utils/constants";
 import { fetchHandler, emitterHandler } from "./shared";
+import localForage from "localforage";
 
 interface IState {
   loading: boolean;
@@ -12,7 +13,7 @@ interface IState {
   variant: string;
 }
 
-export const useABTest = (name: string) => {
+export const useABTest = (name: string, localStorage: boolean = false) => {
   const context = useUpstampsContext();
   const [state, setState] = useState<IState>({
     loading: true,
@@ -26,16 +27,35 @@ export const useABTest = (name: string) => {
   useEffect(() => {
     const onFetch = async () => {
       try {
-        const { show, loading, variant } = await fetchHandler(url, name);
+        const storageData = (await localForage.getItem(name)) as IState;
 
-        setState((prevState: IState) => {
-          return {
-            ...prevState,
+        //Checks the current data on local storage
+        if (localStorage && storageData !== null) {
+          console.log("useABTest local");
+          setState((prevState: IState) => {
+            return {
+              ...prevState,
+              ...storageData
+            };
+          });
+        } else {
+          console.log("useABTest remote");
+          const { show, loading, variant } = await fetchHandler(url, name);
+          setState((prevState: IState) => {
+            return {
+              ...prevState,
+              show,
+              variant,
+              loading
+            };
+          });
+          //Updates local storage with the new data
+          await localForage.setItem(name, {
             show,
             variant,
             loading
-          };
-        });
+          });
+        }
       } catch (e) {
         setState((prevState: IState) => {
           return { ...prevState, error: true, loading: false };
@@ -59,5 +79,5 @@ export const useABTest = (name: string) => {
     loading: state.loading,
     variant: state.variant,
     emitter: onEmitter
-  } as IState | { emitter: () => {} };
+  } as const;
 };

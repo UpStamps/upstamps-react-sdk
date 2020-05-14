@@ -1,4 +1,4 @@
 export declare const useRemoteFlag: (name: string) => {
-    show: boolean;
-    data: {};
+    readonly show: boolean;
+    readonly data: {};
 };
