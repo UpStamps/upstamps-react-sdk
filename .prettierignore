@@ -1,0 +1,8 @@
+node_modules
+example
+yarn.lock
+package-lock.json
+public
+dist
+_configs_files
+.github

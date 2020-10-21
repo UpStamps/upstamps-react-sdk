@@ -4,7 +4,7 @@ import useUpstampsContext from "../Contexts/useUpstampsContext";
 import { apiUrl } from "../Utils/constants";
 import { fetchHandler, emitterHandler } from "./shared";
 //Types
-import {ABTestProps, IState, ContainerProps} from "./types"
+import { ABTestProps, IState, ContainerProps } from "./types";
 
 const Container = React.forwardRef(
   (props: ContainerProps, ref: React.Ref<any>) => {
@@ -21,7 +21,7 @@ export const ABTest = ({ children, name, testRef }: ABTestProps) => {
     loading: true,
     error: false,
     variant: "A",
-    show: false
+    show: false,
   });
 
   const { clientId, projectKey, envKey } = context.state.params;
@@ -37,7 +37,7 @@ export const ABTest = ({ children, name, testRef }: ABTestProps) => {
     setState((prevState: IState) => {
       return {
         ...prevState,
-        component
+        component,
       };
     });
   };
@@ -54,7 +54,7 @@ export const ABTest = ({ children, name, testRef }: ABTestProps) => {
             ...prevState,
             show,
             variant,
-            loading
+            loading,
           };
         });
       } catch (e) {
@@ -85,7 +85,7 @@ export const ABTest = ({ children, name, testRef }: ABTestProps) => {
 
 const Variant = ({
   children,
-  name
+  name,
 }: {
   children: React.ReactNode;
   name: string;

@@ -4,13 +4,11 @@ Integration with React helps and facilitates the process of testing and developi
 
 Start by installing the library following the instructions below.
 
-
 Quick links
 
 - [About](https://upstamps.com/)
 - [Dashboard](https://app.upstamps.com/)
 - [Documentation](https://docs.upstamps.com/)
-
 
 ## Installation
 

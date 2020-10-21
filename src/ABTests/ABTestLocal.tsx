@@ -5,8 +5,7 @@ import { apiUrl } from "../Utils/constants";
 import { fetchHandler, emitterHandler } from "./shared";
 import localForage from "localforage";
 //Types
-import {ABTestLocalProps, IState, ContainerProps} from "./types"
-
+import { ABTestLocalProps, IState, ContainerProps } from "./types";
 
 const Container = React.forwardRef(
   (props: ContainerProps, ref: React.Ref<any>) => {
@@ -20,7 +19,7 @@ export const ABTestLocal = ({
   children,
   name,
   testRef,
-  localStorage = false
+  localStorage = false,
 }: ABTestLocalProps) => {
   const context = useUpstampsContext();
   const [state, setState] = useState<IState>({
@@ -28,7 +27,7 @@ export const ABTestLocal = ({
     loading: true,
     error: false,
     variant: "A",
-    show: false
+    show: false,
   });
 
   const { clientId, projectKey, envKey } = context.state.params;
@@ -44,7 +43,7 @@ export const ABTestLocal = ({
     setState((prevState: IState) => {
       return {
         ...prevState,
-        component
+        component,
       };
     });
   };
@@ -62,7 +61,7 @@ export const ABTestLocal = ({
           setState((prevState: IState) => {
             return {
               ...prevState,
-              ...storageData
+              ...storageData,
             };
           });
         } else {
@@ -76,7 +75,7 @@ export const ABTestLocal = ({
               ...prevState,
               show,
               variant,
-              loading
+              loading,
             };
           });
 
@@ -84,7 +83,7 @@ export const ABTestLocal = ({
           await localForage.setItem(name, {
             show,
             variant,
-            loading
+            loading,
           });
         }
       } catch (e) {
@@ -115,7 +114,7 @@ export const ABTestLocal = ({
 
 const Variant = ({
   children,
-  name
+  name,
 }: {
   children: React.ReactNode;
   name: string;

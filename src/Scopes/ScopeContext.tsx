@@ -45,7 +45,7 @@ export const ScopesContext = createContext<ScopesContextState>(
   {} as ScopesContextState
 );
 
-let reducer = (state: ScopesState, action: ReducerScopeActions) => {
+const reducer = (state: ScopesState, action: ReducerScopeActions) => {
   switch (action.type) {
     case "set-scope":
       return { ...state, ...action.payload };
@@ -60,19 +60,19 @@ let reducer = (state: ScopesState, action: ReducerScopeActions) => {
 export const ScopesProvider: React.FC<ScopesProviderProps> = ({
   children,
   name,
-  email
+  email,
 }) => {
   const context = useUpstampsContext();
 
   const params = {
     name,
-    email
+    email,
   };
 
   const [state, dispatch] = useReducer(reducer, {
     loading: true,
     error: false,
-    params
+    params,
   });
 
   const { clientId, projectKey } = context.state.params;
@@ -88,13 +88,13 @@ export const ScopesProvider: React.FC<ScopesProviderProps> = ({
 
         const post_body = {
           name,
-          email
+          email,
         };
 
         await fetch(url, {
           method: "POST",
           headers: { "content-type": "application/x-www-form-urlencoded" },
-          body: JSON.stringify(post_body)
+          body: JSON.stringify(post_body),
         });
 
         window.localStorage.setItem("upstamps_scope_email", email);
@@ -102,13 +102,13 @@ export const ScopesProvider: React.FC<ScopesProviderProps> = ({
         if (!ignore) {
           dispatch({
             type: "set-scope",
-            payload: { success: true, loading: false }
+            payload: { success: true, loading: false },
           });
         }
       } catch (e) {
         dispatch({
           type: "set-scope-error",
-          payload: { loading: false, error: true }
+          payload: { loading: false, error: true },
         });
       }
     };

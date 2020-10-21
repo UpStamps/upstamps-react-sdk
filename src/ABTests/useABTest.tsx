@@ -5,8 +5,7 @@ import useUpstampsContext from "../Contexts/useUpstampsContext";
 import { apiUrl } from "../Utils/constants";
 import { fetchHandler, emitterHandler } from "./shared";
 //Types
-import { IState } from "./types"
-
+import { IState } from "./types";
 
 export const useABTest = (name: string) => {
   const context = useUpstampsContext();
@@ -14,7 +13,7 @@ export const useABTest = (name: string) => {
     loading: true,
     error: false,
     show: false,
-    variant: "A"
+    variant: "A",
   });
   const { clientId, projectKey, envKey } = context.state.params;
   const url = `${apiUrl}/${clientId}/${projectKey}/${envKey}/testing`;
@@ -29,7 +28,7 @@ export const useABTest = (name: string) => {
             ...prevState,
             show,
             variant,
-            loading
+            loading,
           };
         });
       } catch (e) {
@@ -54,6 +53,6 @@ export const useABTest = (name: string) => {
     error: state.error,
     loading: state.loading,
     variant: state.variant,
-    emitter: onEmitter
-  } as IState | { emitter: () => {} };
+    emitter: onEmitter,
+  } as IState | { emitter: () => unknown };
 };

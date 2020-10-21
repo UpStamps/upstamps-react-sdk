@@ -4,16 +4,15 @@ import { apiUrl } from "../Utils/constants";
 import { handleFetch } from "./shared";
 //Context
 import useUpstampsContext from "../Contexts/useUpstampsContext";
-//Types 
-import {IState, SegmentProps} from "./types"
-
+//Types
+import { IState, SegmentProps } from "./types";
 
 export const Segment: React.FC<SegmentProps> = ({ children, name, params }) => {
   const context = useUpstampsContext();
   const [state, setState] = useState<IState>({
     loading: true,
     error: false,
-    show: false
+    show: false,
   });
 
   const { clientId, projectKey, envKey } = context.state.params;
@@ -28,7 +27,7 @@ export const Segment: React.FC<SegmentProps> = ({ children, name, params }) => {
           return {
             ...prevState,
             show,
-            loading
+            loading,
           };
         });
       } catch (e) {

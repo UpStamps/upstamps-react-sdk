@@ -7,21 +7,20 @@ import isEqual from "lodash.isequal";
 import useUpstampsContext from "../Contexts/useUpstampsContext";
 //LocalStorage
 import localForage from "localforage";
-//Types 
-import {IState, SegmentLocalProps, IStorageData} from "./types"
-
+//Types
+import { IState, SegmentLocalProps, IStorageData } from "./types";
 
 export const SegmentLocal: React.FC<SegmentLocalProps> = ({
   children,
   name,
   params,
-  localStorage = false
+  localStorage = false,
 }) => {
   const context = useUpstampsContext();
   const [state, setState] = useState<IState>({
     loading: true,
     error: false,
-    show: false
+    show: false,
   });
 
   const { clientId, projectKey, envKey } = context.state.params;
@@ -39,7 +38,7 @@ export const SegmentLocal: React.FC<SegmentLocalProps> = ({
             return {
               ...prevState,
               show: isEqual(params, storageData.params),
-              loading: false
+              loading: false,
             };
           });
         } else {
@@ -49,14 +48,14 @@ export const SegmentLocal: React.FC<SegmentLocalProps> = ({
             return {
               ...prevState,
               show,
-              loading
+              loading,
             };
           });
           //Updates local storage with the new data
           await localForage.setItem(name, {
             show,
             loading,
-            params
+            params,
           });
         }
       } catch (e) {

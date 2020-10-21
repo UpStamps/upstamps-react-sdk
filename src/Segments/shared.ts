@@ -11,11 +11,11 @@ export const handleFetch = async (
       name: name,
       country: params.country,
       client: params.client,
-      clientType: params.clientType
+      clientType: params.clientType,
     });
 
     const response = await fetch(`${url}?${query}`, {
-      method: "GET"
+      method: "GET",
     });
 
     const { segment } = await response.json();
@@ -24,7 +24,7 @@ export const handleFetch = async (
     return {
       segment,
       show,
-      loading: false
+      loading: false,
     };
   } catch (e) {
     throw e;

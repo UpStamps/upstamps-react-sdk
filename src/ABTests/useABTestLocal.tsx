@@ -6,16 +6,15 @@ import { apiUrl } from "../Utils/constants";
 import { fetchHandler, emitterHandler } from "./shared";
 import localForage from "localforage";
 //Types
-import { IState } from "./types"
+import { IState } from "./types";
 
-
-export const useABTestLocal = (name: string, localStorage: boolean = false) => {
+export const useABTestLocal = (name: string, localStorage = false) => {
   const context = useUpstampsContext();
   const [state, setState] = useState<IState>({
     loading: true,
     error: false,
     show: false,
-    variant: "A"
+    variant: "A",
   });
   const { clientId, projectKey, envKey } = context.state.params;
   const url = `${apiUrl}/${clientId}/${projectKey}/${envKey}/testing`;
@@ -31,7 +30,7 @@ export const useABTestLocal = (name: string, localStorage: boolean = false) => {
           setState((prevState: IState) => {
             return {
               ...prevState,
-              ...storageData
+              ...storageData,
             };
           });
         } else {
@@ -42,14 +41,14 @@ export const useABTestLocal = (name: string, localStorage: boolean = false) => {
               ...prevState,
               show,
               variant,
-              loading
+              loading,
             };
           });
           //Updates local storage with the new data
           await localForage.setItem(name, {
             show,
             variant,
-            loading
+            loading,
           });
         }
       } catch (e) {
@@ -74,6 +73,6 @@ export const useABTestLocal = (name: string, localStorage: boolean = false) => {
     error: state.error,
     loading: state.loading,
     variant: state.variant,
-    emitter: onEmitter
+    emitter: onEmitter,
   } as const;
 };

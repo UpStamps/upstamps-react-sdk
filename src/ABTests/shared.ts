@@ -13,7 +13,7 @@ export const fetchHandler = async (url: string, name: string) => {
     return {
       show,
       variant: variantTypes[randomVariant],
-      loading: false
+      loading: false,
     };
   } catch (e) {
     throw e;
@@ -29,13 +29,13 @@ export const emitterHandler = async (
     const post_body = {
       name,
       varA: variant === "A" ? 1 : 0,
-      varB: variant === "B" ? 1 : 0
+      varB: variant === "B" ? 1 : 0,
     };
 
     const response = await fetch(url, {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: JSON.stringify(post_body)
+      body: JSON.stringify(post_body),
     });
 
     return await response.json();

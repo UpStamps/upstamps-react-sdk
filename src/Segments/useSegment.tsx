@@ -3,10 +3,8 @@ import useUpstampsContext from "../Contexts/useUpstampsContext";
 //Utils
 import { apiUrl } from "../Utils/constants";
 import { handleFetch } from "./shared";
-//Types 
-import {IState} from "./types"
-
-
+//Types
+import { IState } from "./types";
 
 export const useSegment = (
   name: string,
@@ -16,7 +14,7 @@ export const useSegment = (
   const [state, setState] = useState<IState>({
     loading: true,
     error: false,
-    show: false
+    show: false,
   });
   const { clientId, projectKey, envKey } = context.state.params;
   const url = `${apiUrl}/${clientId}/${projectKey}/${envKey}/segment`;
@@ -30,7 +28,7 @@ export const useSegment = (
           return {
             ...prevState,
             show,
-            loading
+            loading,
           };
         });
       } catch (e) {
@@ -45,6 +43,6 @@ export const useSegment = (
   return {
     show: state.show,
     error: state.error,
-    loading: state.loading
-  } as IState | { emitter: () => {} };
+    loading: state.loading,
+  } as IState | { emitter: () => unknown };
 };

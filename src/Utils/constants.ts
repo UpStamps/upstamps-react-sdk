@@ -1,1 +1,1 @@
-export const apiUrl: string = "https://services.upstamps.com/api";
+export const apiUrl = "https://services.upstamps.com/api";

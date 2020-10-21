@@ -24,8 +24,8 @@ export * from "./ABTests/useABTestLocal";
  */
 export * from "./Segments/useSegment";
 export * from "./Segments/Segment";
-export * from "./Segments/SegmentLocal"
-export * from "./Segments/useSegmentLocal"
+export * from "./Segments/SegmentLocal";
+export * from "./Segments/useSegmentLocal";
 /**
  * SCOPES
  */

@@ -15,7 +15,7 @@ export interface UpStampsState {
   loading: boolean;
   error: boolean;
   flags: Array<string>;
-  remotes: Array<{ name: string; data: {} }>;
+  remotes: Array<{ name: string; data: unknown }>;
   params: UpStampsConfigParams;
 }
 
@@ -48,7 +48,7 @@ export type ReducerSetRemotes = {
   payload: {
     remotes: Array<{
       name: string;
-      data: {};
+      data: unknown;
     }>;
     loading: boolean;
   };
@@ -72,7 +72,7 @@ export const UpStampsContext = createContext<UpStampsContextState>(
   {} as UpStampsContextState
 );
 
-let reducer = (state: UpStampsState, action: ReducerActions) => {
+const reducer = (state: UpStampsState, action: ReducerActions) => {
   switch (action.type) {
     case "set-flags":
       return { ...state, ...action.payload };
@@ -93,13 +93,13 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
   clientId,
   envKey,
   projectKey,
-  endpoint = apiUrl
+  endpoint = apiUrl,
 }) => {
   const params = {
     clientId,
     envKey,
     projectKey,
-    endpoint
+    endpoint,
   };
 
   const [state, dispatch] = useReducer(reducer, {
@@ -107,7 +107,7 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
     error: false,
     flags: [],
     remotes: [],
-    params
+    params,
   });
 
   const value = useMemo(() => ({ state, dispatch }), [state, dispatch]);
@@ -137,8 +137,8 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
             type: "set-flags",
             payload: {
               flags: data,
-              loading: false
-            }
+              loading: false,
+            },
           });
           //Update or save on localStorage
           await localForage.setItem("flags", data);
@@ -146,7 +146,7 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
       } catch (e) {
         dispatch({
           type: "set-flags-error",
-          payload: { loading: false, error: true }
+          payload: { loading: false, error: true },
         });
       }
     };
@@ -167,7 +167,7 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
         if (!ignore) {
           dispatch({
             type: "set-remotes",
-            payload: { remotes, loading: false }
+            payload: { remotes, loading: false },
           });
           //Update or save on localStorage
           await localForage.setItem("remotes", remotes);
@@ -175,7 +175,7 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
       } catch (e) {
         dispatch({
           type: "set-remotes-error",
-          payload: { loading: false, error: true }
+          payload: { loading: false, error: true },
         });
       }
     };
