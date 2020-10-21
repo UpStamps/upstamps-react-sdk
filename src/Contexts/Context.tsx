@@ -8,6 +8,7 @@ export interface UpStampsConfigParams {
   clientId: string;
   envKey: string;
   projectKey: string;
+  endpoint?: string;
 }
 
 export interface UpStampsState {
@@ -91,12 +92,14 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
   children,
   clientId,
   envKey,
-  projectKey
+  projectKey,
+  endpoint = apiUrl
 }) => {
   const params = {
     clientId,
     envKey,
-    projectKey
+    projectKey,
+    endpoint
   };
 
   const [state, dispatch] = useReducer(reducer, {
@@ -119,7 +122,7 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
         if (state.flags.length > 0) return;
 
         //Service Url
-        const url = `${apiUrl}/${clientId}/${projectKey}/${envKey}/flags`;
+        const url = `${endpoint}/${clientId}/${projectKey}/${envKey}/flags`;
 
         //Response with the all the flags
         const response = await fetch(url);
@@ -154,7 +157,7 @@ export const UpStampsProvider: React.FC<UpStampsProviderProps> = ({
         if (state.remotes.length > 0) return;
 
         //Service Url
-        const url = `${apiUrl}/${clientId}/${projectKey}/${envKey}/remotes`;
+        const url = `${endpoint}/${clientId}/${projectKey}/${envKey}/remotes`;
 
         //Response with the all the remotes flags
         const response = await fetch(url);

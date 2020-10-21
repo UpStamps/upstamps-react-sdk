@@ -17,11 +17,15 @@ export * from "./Remotes/RemoteFlag";
  */
 export * from "./ABTests/useABTest";
 export * from "./ABTests/ABTest";
+export * from "./ABTests/ABTestLocal";
+export * from "./ABTests/useABTestLocal";
 /**
  * SEGMENTS
  */
 export * from "./Segments/useSegment";
 export * from "./Segments/Segment";
+export * from "./Segments/SegmentLocal";
+export * from "./Segments/useSegmentLocal";
 /**
  * SCOPES
  */

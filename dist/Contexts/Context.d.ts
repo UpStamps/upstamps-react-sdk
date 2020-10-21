@@ -3,6 +3,7 @@ export interface UpStampsConfigParams {
     clientId: string;
     envKey: string;
     projectKey: string;
+    endpoint?: string;
 }
 export interface UpStampsState {
     loading: boolean;
